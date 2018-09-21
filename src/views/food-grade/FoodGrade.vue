@@ -1,8 +1,19 @@
 <template>
     <div>
-        <card v-for="src in list" style="background-color:white">
+        <Sticky
+            ref="sticky">
+            <x-header
+                style="width:100%;position:absolute;left:0;top:0;z-index:100;"
+                :left-options="leftOptions"
+                @on-click-back="handleBackClicked">
+                <span slot="right">
+                <x-icon type="camera" style="fill:#fff;" @click="handleCameraClicked"></x-icon>
+                </span>
+            </x-header>
+        </Sticky>
+        <card v-for="src in list" style="background-color:white" :key="src + new Date()">
             <x-img slot="content" :src="src" :webp-src="`${src}?type=webp`" @on-success="success" @on-error="error"
-                   class="ximg-demo" error-class="ximg-error" :offset="-100" container="#vux_view_box_body"></x-img>
+                   class="ximg-normal" error-class="ximg-error" :offset="-100" container="#vux_view_box_body"></x-img>
             <div slot="footer" class="card-padding" style="text-align:left;">
                 <p style="color:#999;font-size:12px;">Posted on January 21, 2015</p>
                 <rater v-model="grade"></rater>
@@ -13,11 +24,14 @@
 </template>
 
 <script>
-    import { XImg, Card, Rater } from 'vux';
+    import { ViewBox, XHeader, Sticky, XImg, Card, Rater } from 'vux';
 
     export default {
-        name: 'example-card',
+        name: 'food-grade',
         components: {
+            ViewBox,
+            XHeader,
+            Sticky,
             XImg,
             Card,
             Rater
@@ -38,7 +52,22 @@
                 grade: '5'
             };
         },
+        computed: {
+            leftOptions () {
+                return {
+                    showBack: true,
+                    backText: '',
+                    preventGoBack: true
+                };
+            }
+        },
         methods: {
+            handleBackClicked () {
+                console.log('back');
+            },
+            handleCameraClicked () {
+                console.log('clicked');
+            },
             success (src, ele) {
                 console.log('success load', src, ele);
                 // const span = ele.parentNode.querySelector('span');
@@ -53,7 +82,7 @@
 </script>
 
 <style scoped>
-    .ximg-demo {
+    .ximg-normal {
         width: 100%;
         height: auto;
     }
@@ -61,9 +90,5 @@
     .ximg-error {
         background-color: transparent;
     }
-
-    .ximg-error:after {
-        content: '加载失败';
-        color: red;
-    }
 </style>
+

@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import HelloWorld from '@/components/HelloFromVux';
-import ExampleCard from '@/example/ExampleCard';
+import FoodGrade from '@/views/food-grade/FoodGrade';
 
 Vue.use(Router);
 
@@ -9,13 +8,8 @@ export default new Router({
     routes: [
         {
             path: '/',
-            name: 'HelloWorld',
-            component: HelloWorld
-        },
-        {
-            path: '/example/ExampleCard',
-            name: 'ExampleCard',
-            component: ExampleCard
+            name: 'FoodGrade',
+            component: FoodGrade
         }
     ]
 });
