@@ -67,6 +67,7 @@
             },
             handleCameraClicked () {
                 console.log('clicked');
+                this.$router.push('/food-upload');
             },
             success (src, ele) {
                 console.log('success load', src, ele);
