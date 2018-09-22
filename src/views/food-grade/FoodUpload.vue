@@ -77,7 +77,6 @@
                 this.$router.go(-1);
             },
             handleFinishClicked () {
-                console.log(this.image);
                 this.myCroppa.generateBlob(blob => {
                     let params = new FormData();
                     params.append('user', '');

@@ -4,6 +4,12 @@ export function saveFoodGrade (params) {
     return service({
         method: 'put',
         url: 'foodGrades',
-        data: params
+        data: params,
+        onUploadProgress: function (progressEvent) {
+            if (progressEvent.lengthComputable) {
+                let num = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+                console.log(num);
+            }
+        }
     });
 }
