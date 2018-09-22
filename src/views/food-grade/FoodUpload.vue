@@ -31,6 +31,7 @@
         </datetime>
         <x-textarea
             placeholder="说点啥吧"
+            v-model="comment"
             :rows="5">
         </x-textarea>
     </div>
@@ -40,6 +41,7 @@
 <script>
     import { Sticky, XHeader, Group, Cell, Rater, XTextarea, Datetime } from 'vux';
     import util from '@/libs/util';
+    import { saveFoodGrade } from '@/api/food-grade';
 
     export default {
         name: 'food-upload',
@@ -57,6 +59,7 @@
                 myCroppa: {},
                 grade: 0,
                 dateTime: util.formatDate(new Date(), 'yyyy-MM-dd hh:mm'),
+                comment: '',
                 image: null
             };
         },
@@ -74,15 +77,22 @@
                 this.$router.go(-1);
             },
             handleFinishClicked () {
-                console.log('clicked');
-            },
-            uploadCroppedImage () {
-                this.myCroppa.generateBlob((blob) => {
-                    // write code to upload the cropped image file (a file is a blob)
-                }, 'image/jpeg', 0.8); // 80% compressed jpeg file
+                console.log(this.image);
+                this.myCroppa.generateBlob(blob => {
+                    let params = new FormData();
+                    params.append('user', '');
+                    params.append('dateTime', this.dateTime);
+                    params.append('grade', this.grade);
+                    params.append('comment', this.comment);
+                    params.append('file', blob, this.image.name);
+                    saveFoodGrade(params).then(data => {
+                        console.log(data);
+                    }).catch(err => {
+                        console.log(err);
+                    });
+                }); // 80% compressed jpeg file
             },
             handleImageChoose (file) {
-                console.log(file);
                 this.image = file;
             },
             handleImageRemove () {
