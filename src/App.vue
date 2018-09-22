@@ -1,5 +1,5 @@
 <template>
-    <div id="app">
+    <div id="app" class="container">
         <router-view></router-view>
     </div>
 </template>
@@ -15,5 +15,8 @@
 
     body {
         background-color: #fbf9fe;
+    }
+
+    .container {
     }
 </style>
