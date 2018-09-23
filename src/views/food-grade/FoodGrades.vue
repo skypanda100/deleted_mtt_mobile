@@ -84,7 +84,7 @@
         },
         methods: {
             handleBackClicked () {
-                console.log('back');
+                this.$router.go(-1);
             },
             handleCameraClicked () {
                 console.log('clicked');

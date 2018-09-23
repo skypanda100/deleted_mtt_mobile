@@ -13,7 +13,7 @@ export default new Router({
         {
             path: '/',
             name: 'Home',
-            comment: Home
+            component: Home
         },
         {
             path: '/air-grade',

@@ -1,5 +1,17 @@
 <template>
 <div>
+    <Sticky
+        ref="sticky">
+        <x-header
+            style="width:100%;position:absolute;left:0;top:0;z-index:100;"
+            :left-options="leftOptions"
+            @on-click-back="handleBackClicked">
+                <span slot="right">
+                </span>
+        </x-header>
+    </Sticky>
+    <br>
+    <br>
     <group :title="dateTime">
         <cell title="temp(℃)" :inline-desc="temp">
             <rater v-model="tempGrade"></rater>
@@ -21,12 +33,14 @@
 </template>
 
 <script>
-    import { Rater, Group, Cell } from 'vux';
+    import { XHeader, Sticky, Rater, Group, Cell } from 'vux';
     import { fetchLastAirGrade } from '@/api/air-grade';
 
     export default {
         name: 'air-grade',
         components: {
+            XHeader,
+            Sticky,
             Rater,
             Group,
             Cell
@@ -132,10 +146,24 @@
                 }
             }
         },
+        computed: {
+            leftOptions () {
+                return {
+                    showBack: true,
+                    backText: '',
+                    preventGoBack: true
+                };
+            }
+        },
         mounted () {
             fetchLastAirGrade().then(response => {
                 this.lastAirGrade = response.data;
             });
+        },
+        methods: {
+            handleBackClicked () {
+                this.$router.go(-1);
+            }
         }
     };
 </script>
