@@ -13,3 +13,14 @@ export function saveFoodGrade (params) {
         }
     });
 }
+
+export function fetchFoodGrade (sortField) {
+    let params = {
+        sort: sortField
+    };
+    return service({
+        method: 'get',
+        url: 'foodGrades',
+        data: params
+    });
+}

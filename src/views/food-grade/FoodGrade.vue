@@ -14,12 +14,12 @@
         <br>
         <br>
         <card v-for="src in list" style="background-color:white;padding: 10px" :key="src + new Date()">
-            <x-img slot="content" :src="src" :webp-src="`${src}?type=webp`" @on-success="success" @on-error="error"
+            <x-img slot="content" :src="src" :webp-src="`${imageHost + '/' + src.imagePath}?type=webp`" @on-success="success" @on-error="error"
                    class="ximg-normal" error-class="ximg-error" :offset="-100" container="#vux_view_box_body"></x-img>
             <div slot="footer" class="card-padding" style="text-align:left;">
-                <p style="color:#999;font-size:12px;">Posted on January 21, 2015</p>
-                <rater v-model="grade"></rater>
-                <p style="font-size:14px;line-height:1.2;">上等羊肉汤，味道鲜美至极，简直就是辛劳一天后的馈赠</p>
+                <p style="color:#999;font-size:12px;">Posted on {{src.dateTime}}</p>
+                <rater :value="src.grade"></rater>
+                <p style="font-size:14px;line-height:1.2;">{{src.comment}}</p>
             </div>
         </card>
     </div>
@@ -27,6 +27,8 @@
 
 <script>
     import { ViewBox, XHeader, Sticky, XImg, Card, Rater } from 'vux';
+    import { fetchFoodGrade } from '@/api/food-grade';
+    import env from '@/../config/env';
 
     export default {
         name: 'food-grade',
@@ -40,20 +42,17 @@
         },
         data () {
             return {
+                imageHost: env.imageHost,
                 errorSrc: '/static/error.png',
-                list: [
-                    'https://o5omsejde.qnssl.com/demo/test1.jpg',
-                    '/static/IMG20160708181318.jpg',
-                    'https://o5omsejde.qnssl.com/demo/test2.jpg',
-                    'https://o5omsejde.qnssl.com/demo/test0.jpg',
-                    'https://o5omsejde.qnssl.com/demo/test4.jpg',
-                    'https://o5omsejde.qnssl.com/demo/test5.jpg',
-                    'https://o5omsejde.qnssl.com/demo/test6.jpg',
-                    'https://o5omsejde.qnssl.com/demo/test7.jpg',
-                    'https://o5omsejde.qnssl.com/demo/test8.jpg'
-                ],
+                list: [],
                 grade: '5'
             };
+        },
+        mounted () {
+            fetchFoodGrade('-dateTime').then(response => {
+                this.list = response.data;
+                console.log(this.list);
+            });
         },
         computed: {
             leftOptions () {
