@@ -1,6 +1,6 @@
 import {service} from '@/libs/request';
 
-export function saveFoodGrade (params) {
+export function saveFoodGrade (params, progress) {
     return service({
         method: 'put',
         url: 'foodGrades',
@@ -21,6 +21,6 @@ export function fetchFoodGrade (sortField) {
     return service({
         method: 'get',
         url: 'foodGrades',
-        data: params
+        params: params
     });
 }

@@ -1,5 +1,8 @@
 <template>
 <div>
+    <div v-transfer-dom>
+        <loading :show="isShowLoading" :text="loadingText"></loading>
+    </div>
     <Sticky
         ref="sticky">
         <x-header
@@ -39,13 +42,17 @@
 </template>
 
 <script>
-    import { Sticky, XHeader, Group, Cell, Rater, XTextarea, Datetime } from 'vux';
+    import { Loading, TransferDomDirective as TransferDom, Sticky, XHeader, Group, Cell, Rater, XTextarea, Datetime } from 'vux';
     import util from '@/libs/util';
     import { saveFoodGrade } from '@/api/food-grade';
 
     export default {
         name: 'food-upload',
+        directives: {
+            TransferDom
+        },
         components: {
+            Loading,
             Sticky,
             XHeader,
             Group,
@@ -56,6 +63,8 @@
         },
         data () {
             return {
+                isShowLoading: false,
+                loadingText: '',
                 myCroppa: {},
                 grade: 0,
                 dateTime: util.formatDate(new Date(), 'yyyy-MM-dd hh:mm'),
@@ -73,6 +82,15 @@
             }
         },
         methods: {
+            clearAll () {
+                this.isShowLoading = false;
+                this.loadingText = '';
+                this.myCroppa = {};
+                this.grade = 0;
+                this.dateTime = util.formatDate(new Date(), 'yyyy-MM-dd hh:mm');
+                this.comment = '';
+                this.image = null;
+            },
             handleBackClicked () {
                 this.$router.go(-1);
             },
@@ -84,18 +102,30 @@
                     params.append('grade', this.grade);
                     params.append('comment', this.comment);
                     params.append('file', blob, this.image.name);
-                    saveFoodGrade(params).then(data => {
+                    saveFoodGrade(params, this.handleImageUploadProgress).then(data => {
                         console.log(data);
                     }).catch(err => {
                         console.log(err);
                     });
-                }); // 80% compressed jpeg file
+                });
             },
             handleImageChoose (file) {
                 this.image = file;
             },
             handleImageRemove () {
                 this.image = null;
+            },
+            handleImageUploadProgress (progressEvent) {
+                if (progressEvent.lengthComputable) {
+                    let num = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+                    console.log(num);
+                    if (num >= 0 && num < 100) {
+                        this.isShowLoading = true;
+                        this.loadingText = num + '%';
+                    } else {
+                        this.clearAll();
+                    }
+                }
             }
         }
     };

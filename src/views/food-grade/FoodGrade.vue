@@ -13,8 +13,8 @@
         </Sticky>
         <br>
         <br>
-        <card v-for="src in list" style="background-color:white;padding: 10px" :key="src + new Date()">
-            <x-img slot="content" :src="src" :webp-src="`${imageHost + '/' + src.imagePath}?type=webp`" @on-success="success" @on-error="error"
+        <card v-for="src in list" style="background-color:white;padding: 10px" :key="src.imagePath">
+            <x-img slot="content" :src="imageHost + '/' + src.imagePath" :webp-src="`${imageHost + '/' + src.imagePath}?type=webp`" @on-success="success" @on-error="error"
                    class="ximg-normal" error-class="ximg-error" :offset="-100" container="#vux_view_box_body"></x-img>
             <div slot="footer" class="card-padding" style="text-align:left;">
                 <p style="color:#999;font-size:12px;">Posted on {{src.dateTime}}</p>
