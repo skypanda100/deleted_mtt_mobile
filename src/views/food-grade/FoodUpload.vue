@@ -1,5 +1,7 @@
 <template>
 <div>
+    <toast v-model="isShowToast" type="text" :time="2000" is-show-mask :text="toastText">
+    </toast>
     <div v-transfer-dom>
         <loading :show="isShowLoading" :text="loadingText"></loading>
     </div>
@@ -42,7 +44,7 @@
 </template>
 
 <script>
-    import { Loading, TransferDomDirective as TransferDom, Sticky, XHeader, Group, Cell, Rater, XTextarea, Datetime } from 'vux';
+    import { Toast, Loading, TransferDomDirective as TransferDom, Sticky, XHeader, Group, Cell, Rater, XTextarea, Datetime } from 'vux';
     import util from '@/libs/util';
     import { saveFoodGrade } from '@/api/food-grade';
 
@@ -52,6 +54,7 @@
             TransferDom
         },
         components: {
+            Toast,
             Loading,
             Sticky,
             XHeader,
@@ -63,6 +66,8 @@
         },
         data () {
             return {
+                isShowToast: false,
+                toastText: '',
                 isShowLoading: false,
                 loadingText: '',
                 myCroppa: {},
@@ -85,7 +90,7 @@
             clearAll () {
                 this.isShowLoading = false;
                 this.loadingText = '';
-                this.myCroppa = {};
+                this.myCroppa.remove();
                 this.grade = 0;
                 this.dateTime = util.formatDate(new Date(), 'yyyy-MM-dd hh:mm');
                 this.comment = '';
@@ -104,10 +109,14 @@
                     params.append('file', blob, this.image.name);
                     saveFoodGrade(params, this.handleImageUploadProgress).then(data => {
                         console.log(data);
+                        if (data.status === 200) {
+                            this.isShowToast = true;
+                            this.toastText = '保存成功';
+                        }
                     }).catch(err => {
                         console.log(err);
                     });
-                });
+                }, this.image.type, 0.8);
             },
             handleImageChoose (file) {
                 this.image = file;

@@ -5,12 +5,7 @@ export function saveFoodGrade (params, progress) {
         method: 'put',
         url: 'foodGrades',
         data: params,
-        onUploadProgress: function (progressEvent) {
-            if (progressEvent.lengthComputable) {
-                let num = Math.round((progressEvent.loaded / progressEvent.total) * 100);
-                console.log(num);
-            }
-        }
+        onUploadProgress: progress
     });
 }
 

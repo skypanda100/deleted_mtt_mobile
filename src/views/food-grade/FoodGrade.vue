@@ -49,6 +49,7 @@
             };
         },
         mounted () {
+            console.log(process.env);
             fetchFoodGrade('-dateTime').then(response => {
                 this.list = response.data;
                 console.log(this.list);
