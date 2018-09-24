@@ -1,9 +1,10 @@
 <template>
     <div>
+        <img style="width: 100%;height: 100%" src="../assets/mtt.jpg"/>
         <group title="">
-            <cell title="Indoor Air Quality" link="/air-grade">
+            <cell title="空气质量" link="/air-grade">
             </cell>
-            <cell title="Food Quality" link="/food-grades">
+            <cell title="食物评分" link="/food-grades">
             </cell>
         </group>
     </div>

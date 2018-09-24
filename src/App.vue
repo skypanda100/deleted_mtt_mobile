@@ -2,7 +2,11 @@
     <div id="app" class="container">
         <!--<router-view></router-view>-->
         <view-box ref="viewBox" body-padding-top="46px">
-            <x-header slot="header" style="width:100%;position:absolute;left:0;top:0;z-index:100;">
+            <x-header
+                slot="header"
+                title="MTT"
+                style="width:100%;position:absolute;left:0;top:0;z-index:100;background-color: #333"
+                :left-options="showBack">
                 <span slot="right" v-if="showCamera">
                     <x-icon type="camera" style="fill:#fff;" @click="handleCameraClicked"></x-icon>
                 </span>
@@ -10,12 +14,12 @@
             <router-view></router-view>
             <tabbar>
                 <tabbar-item link="/">
-                    <img slot="icon" src="./assets/logo.png">
-                    <span slot="label">主页</span>
+                    <img slot="icon" src="./assets/func.png">
+                    <span slot="label">功能区</span>
                 </tabbar-item>
                 <tabbar-item>
-                    <img slot="icon" src="./assets/logo.png">
-                    <span slot="label">我的</span>
+                    <img slot="icon" src="./assets/me.png">
+                    <span slot="label">我</span>
                 </tabbar-item>
             </tabbar>
         </view-box>
@@ -38,6 +42,11 @@
         computed: {
             route () {
                 return this.$store.state.route;
+            },
+            showBack () {
+                return {
+                    showBack: this.route.path !== '/'
+                };
             },
             showCamera () {
                 return this.route.path === '/food-grades' || this.route.path === '/food-grade';
