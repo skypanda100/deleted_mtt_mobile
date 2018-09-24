@@ -5,19 +5,6 @@
     <div v-transfer-dom>
         <loading :show="isShowLoading" :text="loadingText"></loading>
     </div>
-    <Sticky
-        ref="sticky">
-        <x-header
-            style="width:100%;position:absolute;left:0;top:0;z-index:100;"
-            :left-options="leftOptions"
-            @on-click-back="handleBackClicked">
-            <span slot="right">
-                <x-icon v-if="image !== null" type="checkmark" style="fill:#fff;" @click="handleFinishClicked"></x-icon>
-            </span>
-        </x-header>
-    </Sticky>
-    <br>
-    <br>
     <div style="padding: 10px;text-align: center">
         <croppa
             style="width: 100%;height: 100vmin"
@@ -44,7 +31,7 @@
 </template>
 
 <script>
-    import { Toast, Loading, TransferDomDirective as TransferDom, Sticky, XHeader, Group, Cell, Rater, XTextarea, Datetime } from 'vux';
+    import { Toast, Loading, TransferDomDirective as TransferDom, Group, Cell, Rater, XTextarea, Datetime } from 'vux';
     import util from '@/libs/util';
     import { saveFoodGrade } from '@/api/food-grade';
 
@@ -56,8 +43,6 @@
         components: {
             Toast,
             Loading,
-            Sticky,
-            XHeader,
             Group,
             Cell,
             Rater,
@@ -78,13 +63,6 @@
             };
         },
         computed: {
-            leftOptions () {
-                return {
-                    showBack: true,
-                    backText: '',
-                    preventGoBack: true
-                };
-            }
         },
         methods: {
             clearAll () {
@@ -95,9 +73,6 @@
                 this.dateTime = util.formatDate(new Date(), 'yyyy-MM-dd hh:mm');
                 this.comment = '';
                 this.image = null;
-            },
-            handleBackClicked () {
-                this.$router.go(-1);
             },
             handleFinishClicked () {
                 this.myCroppa.generateBlob(blob => {

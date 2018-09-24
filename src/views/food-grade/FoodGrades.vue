@@ -1,18 +1,5 @@
 <template>
     <div>
-        <Sticky
-            ref="sticky">
-            <x-header
-                style="width:100%;position:absolute;left:0;top:0;z-index:100;"
-                :left-options="leftOptions"
-                @on-click-back="handleBackClicked">
-                <span slot="right">
-                    <x-icon type="camera" style="fill:#fff;" @click="handleCameraClicked"></x-icon>
-                </span>
-            </x-header>
-        </Sticky>
-        <br>
-        <br>
         <grid
             :cols="2"
             :show-lr-borders="true"
@@ -44,7 +31,7 @@
 </template>
 
 <script>
-    import { Grid, GridItem, XHeader, Sticky, XImg, Card, Rater } from 'vux';
+    import { Grid, GridItem, XImg, Card, Rater } from 'vux';
     import { fetchFoodGrade } from '@/api/food-grade';
     import env from '@/../config/env';
 
@@ -53,8 +40,6 @@
         components: {
             Grid,
             GridItem,
-            XHeader,
-            Sticky,
             XImg,
             Card,
             Rater
@@ -76,20 +61,11 @@
         computed: {
             leftOptions () {
                 return {
-                    showBack: true,
-                    backText: '',
-                    preventGoBack: true
+                    showBack: false
                 };
             }
         },
         methods: {
-            handleBackClicked () {
-                this.$router.go(-1);
-            },
-            handleCameraClicked () {
-                console.log('clicked');
-                this.$router.push('/food-upload');
-            },
             handleImageClicked (food) {
                 console.log(food);
             },

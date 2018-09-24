@@ -1,46 +1,32 @@
 <template>
-<div>
-    <Sticky
-        ref="sticky">
-        <x-header
-            style="width:100%;position:absolute;left:0;top:0;z-index:100;"
-            :left-options="leftOptions"
-            @on-click-back="handleBackClicked">
-                <span slot="right">
-                </span>
-        </x-header>
-    </Sticky>
-    <br>
-    <br>
-    <group :title="dateTime">
-        <cell title="temp(℃)" :inline-desc="temp">
-            <rater v-model="tempGrade"></rater>
-        </cell>
-        <cell title="humidity(%)" :inline-desc="humidity">
-            <rater v-model="humidityGrade"></rater>
-        </cell>
-        <cell title="pm2.5(AQI)" :inline-desc="pm25">
-            <rater v-model="pm25Grade"></rater>
-        </cell>
-        <cell title="co2(PPM)" :inline-desc="co2">
-            <rater v-model="co2Grade"></rater>
-        </cell>
-        <cell title="hcho(mg/m3)" :inline-desc="hcho">
-            <rater v-model="hchoGrade"></rater>
-        </cell>
-    </group>
-</div>
+    <div>
+        <group :title="dateTime">
+            <cell title="temp(℃)" :inline-desc="temp">
+                <rater v-model="tempGrade"></rater>
+            </cell>
+            <cell title="humidity(%)" :inline-desc="humidity">
+                <rater v-model="humidityGrade"></rater>
+            </cell>
+            <cell title="pm2.5(AQI)" :inline-desc="pm25">
+                <rater v-model="pm25Grade"></rater>
+            </cell>
+            <cell title="co2(PPM)" :inline-desc="co2">
+                <rater v-model="co2Grade"></rater>
+            </cell>
+            <cell title="hcho(mg/m3)" :inline-desc="hcho">
+                <rater v-model="hchoGrade"></rater>
+            </cell>
+        </group>
+    </div>
 </template>
 
 <script>
-    import { XHeader, Sticky, Rater, Group, Cell } from 'vux';
+    import { Rater, Group, Cell } from 'vux';
     import { fetchLastAirGrade } from '@/api/air-grade';
 
     export default {
         name: 'air-grade',
         components: {
-            XHeader,
-            Sticky,
             Rater,
             Group,
             Cell

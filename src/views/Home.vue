@@ -18,8 +18,9 @@
             Group,
             Cell
         },
+        computed: {
+        },
         mounted () {
-            console.log('mounted');
         }
     };
 </script>

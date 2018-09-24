@@ -7,6 +7,7 @@ import App from './App';
 import router from './router';
 import Croppa from 'vue-croppa';
 import 'vue-croppa/dist/vue-croppa.css';
+import store from './store';
 
 Vue.use(Croppa);
 Vue.use(VueRouter);
@@ -17,6 +18,21 @@ Vue.config.productionTip = false;
 
 /* eslint-disable no-new */
 new Vue({
+    store,
     router,
     render: h => h(App)
 }).$mount('#app-box');
+
+router.beforeEach((to, from, next) => {
+    next();
+});
+
+router.afterEach((to) => {
+    window.scrollTo(0, 0);
+    let route = {
+        path: to.path,
+        name: to.name
+    };
+    console.log(route);
+    store.dispatch('SwitchRoute', route);
+});
