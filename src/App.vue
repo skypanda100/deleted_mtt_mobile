@@ -11,7 +11,9 @@
                     <x-icon type="camera" style="fill:#fff;" @click="handleCameraClicked"></x-icon>
                 </span>
             </x-header>
-            <router-view></router-view>
+            <div style="padding: 3px">
+                <router-view></router-view>
+            </div>
             <!--<tabbar>-->
                 <!--<tabbar-item link="/">-->
                     <!--<img slot="icon" src="./assets/func.png">-->
@@ -60,7 +62,6 @@
             }
         },
         mounted () {
-            console.log('mounted');
         },
         methods: {
             handleCameraClicked () {

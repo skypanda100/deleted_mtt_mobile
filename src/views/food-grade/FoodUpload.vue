@@ -27,11 +27,12 @@
             :rows="5">
         </x-textarea>
     </div>
+    <x-button type="primary" :disabled="image == null" @click.native="handleFinishClicked">保存</x-button>
 </div>
 </template>
 
 <script>
-    import { Toast, Loading, TransferDomDirective as TransferDom, Group, Cell, Rater, XTextarea, Datetime } from 'vux';
+    import { Toast, Loading, TransferDomDirective as TransferDom, Group, Cell, Rater, XTextarea, Datetime, XButton } from 'vux';
     import util from '@/libs/util';
     import { saveFoodGrade } from '@/api/food-grade';
 
@@ -47,7 +48,8 @@
             Cell,
             Rater,
             XTextarea,
-            Datetime
+            Datetime,
+            XButton
         },
         data () {
             return {
