@@ -12,16 +12,16 @@
                 </span>
             </x-header>
             <router-view></router-view>
-            <tabbar>
-                <tabbar-item link="/">
-                    <img slot="icon" src="./assets/func.png">
-                    <span slot="label">功能区</span>
-                </tabbar-item>
-                <tabbar-item>
-                    <img slot="icon" src="./assets/me.png">
-                    <span slot="label">我</span>
-                </tabbar-item>
-            </tabbar>
+            <!--<tabbar>-->
+                <!--<tabbar-item link="/">-->
+                    <!--<img slot="icon" src="./assets/func.png">-->
+                    <!--<span slot="label">功能区</span>-->
+                <!--</tabbar-item>-->
+                <!--<tabbar-item>-->
+                    <!--<img slot="icon" src="./assets/me.png">-->
+                    <!--<span slot="label">我</span>-->
+                <!--</tabbar-item>-->
+            <!--</tabbar>-->
         </view-box>
     </div>
 </template>
@@ -44,8 +44,15 @@
                 return this.$store.state.route;
             },
             showBack () {
+                let path = this.route.path.trim();
+                path = path.replace('/', '');
+                if (path === '') {
+                    return {
+                        showBack: false
+                    };
+                }
                 return {
-                    showBack: this.route.path !== '/'
+                    showBack: true
                 };
             },
             showCamera () {
