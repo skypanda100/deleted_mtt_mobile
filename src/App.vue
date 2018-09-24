@@ -1,43 +1,33 @@
 <template>
     <div id="app" class="container">
-        <!--<router-view></router-view>-->
-        <view-box ref="viewBox" body-padding-top="46px">
-            <x-header
-                slot="header"
-                title="MTT"
-                style="width:100%;position:absolute;left:0;top:0;z-index:100;background-color: #333"
-                :left-options="showBack">
-                <span slot="right" v-if="showCamera">
-                    <x-icon type="camera" style="fill:#fff;" @click="handleCameraClicked"></x-icon>
-                </span>
-            </x-header>
-            <div style="padding: 3px">
-                <router-view></router-view>
-            </div>
-            <!--<tabbar>-->
-                <!--<tabbar-item link="/">-->
-                    <!--<img slot="icon" src="./assets/func.png">-->
-                    <!--<span slot="label">功能区</span>-->
-                <!--</tabbar-item>-->
-                <!--<tabbar-item>-->
-                    <!--<img slot="icon" src="./assets/me.png">-->
-                    <!--<span slot="label">我</span>-->
-                <!--</tabbar-item>-->
-            <!--</tabbar>-->
-        </view-box>
+        <div>
+            <sticky :check-sticky-support="false">
+                <x-header
+                    title="MTT"
+                    style="width:100%;position:absolute;left:0;top:0;z-index:100;background-color: #333"
+                    :left-options="showBack">
+                    <span slot="right" v-if="showCamera">
+                        <x-icon type="camera" style="fill:#fff;" @click="handleCameraClicked"></x-icon>
+                    </span>
+                </x-header>
+            </sticky>
+        </div>
+        <br>
+        <br>
+        <div style="padding: 2px">
+            <router-view></router-view>
+        </div>
     </div>
 </template>
 
 <script>
-    import { ViewBox, XHeader, Tabbar, TabbarItem, Group, Cell } from 'vux';
+    import { Sticky, XHeader, Group, Cell } from 'vux';
 
     export default {
         name: 'app',
         components: {
-            ViewBox,
+            Sticky,
             XHeader,
-            Tabbar,
-            TabbarItem,
             Group,
             Cell
         },
@@ -76,13 +66,11 @@
     @import '~vux/src/styles/reset.less';
 
     html, body {
-        height: 100%;
         width: 100%;
         overflow-x: hidden;
-        background-color: #fbf9fe;
+        background-color: #fff;
     }
 
     .container {
-        height: 100%;
     }
 </style>
