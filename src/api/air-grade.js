@@ -6,3 +6,10 @@ export function fetchLastAirGrade () {
         url: 'serials/last'
     });
 }
+
+export function fetchHistoryAirGrade () {
+    return service({
+        method: 'get',
+        url: 'serials/history'
+    });
+}

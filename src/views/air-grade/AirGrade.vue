@@ -17,19 +17,59 @@
                 <rater v-model="hchoGrade"></rater>
             </cell>
         </group>
+
+        <divider>temperature</divider>
+        <v-chart :data="tempData" prevent-default>
+            <v-scale x :tick-count="3" />
+            <v-tooltip :show-item-marker="false" show-x-value />
+            <v-line shape="smooth" :colors="gradient"/>
+        </v-chart>
+
+        <divider>humidity</divider>
+        <v-chart :data="humidityData" prevent-default>
+            <v-scale x :tick-count="3" />
+            <v-tooltip :show-item-marker="false" show-x-value />
+            <v-line shape="smooth" :colors="gradient"/>
+        </v-chart>
+
+        <divider>pm2.5</divider>
+        <v-chart :data="pm25Data" prevent-default>
+            <v-scale x :tick-count="3" />
+            <v-tooltip :show-item-marker="false" show-x-value />
+            <v-line shape="smooth" :colors="gradient"/>
+        </v-chart>
+
+        <divider>co2</divider>
+        <v-chart :data="co2Data" prevent-default>
+            <v-scale x :tick-count="3" />
+            <v-tooltip :show-item-marker="false" show-x-value />
+            <v-line shape="smooth" :colors="gradient"/>
+        </v-chart>
+
+        <divider>hcho</divider>
+        <v-chart :data="hchoData" prevent-default>
+            <v-scale x :tick-count="3" />
+            <v-tooltip :show-item-marker="false" show-x-value />
+            <v-line shape="smooth" :colors="gradient"/>
+        </v-chart>
     </div>
 </template>
 
 <script>
-    import { Rater, Group, Cell } from 'vux';
-    import { fetchLastAirGrade } from '@/api/air-grade';
+    import { Rater, Group, Cell, Divider, VChart, VTooltip, VLine, VScale } from 'vux';
+    import { fetchLastAirGrade, fetchHistoryAirGrade } from '@/api/air-grade';
 
     export default {
         name: 'air-grade',
         components: {
             Rater,
             Group,
-            Cell
+            Cell,
+            Divider,
+            VChart,
+            VTooltip,
+            VLine,
+            VScale
         },
         data () {
             return {
@@ -44,7 +84,17 @@
                 co2Grade: 0,
                 co2: '',
                 hchoGrade: 0,
-                hcho: ''
+                hcho: '',
+                gradient: [
+                    [0, '#F2C587'],
+                    [0.5, '#ED7973'],
+                    [1, '#8659AF']
+                ],
+                tempData: [{ date: '', value: 0 }],
+                humidityData: [{ date: '', value: 0 }],
+                pm25Data: [{ date: '', value: 0 }],
+                co2Data: [{ date: '', value: 0 }],
+                hchoData: [{ date: '', value: 0 }]
             };
         },
         watch: {
@@ -144,6 +194,14 @@
         mounted () {
             fetchLastAirGrade().then(response => {
                 this.lastAirGrade = response.data;
+            });
+            fetchHistoryAirGrade().then(response => {
+                console.log(response.data);
+                this.tempData = response.data.temp;
+                this.humidityData = response.data.humidity;
+                this.hchoData = response.data.hcho;
+                this.pm25Data = response.data.pm2_5;
+                this.co2Data = response.data.co2;
             });
         },
         methods: {
