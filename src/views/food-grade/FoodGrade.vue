@@ -1,28 +1,38 @@
 <template>
-    <div>
-        <card>
-            <x-img slot="content" :src="imageHost + '/' + imagePath" :webp-src="`${imageHost + '/' + imagePath}?type=webp`" @on-success="success" @on-error="error"
-                   class="ximg-normal" error-class="ximg-error" :offset="-100" container="#vux_view_box_body"></x-img>
-            <div slot="footer" class="card-padding" style="text-align:left;">
-                <p style="color:#999;font-size:12px;">Posted on {{dateTime}}</p>
-                <rater :disabled="true" :value="grade"></rater>
-                <p style="font-size:14px;line-height:1.2;">{{comment}}</p>
-            </div>
-        </card>
-    </div>
+    <v-layout>
+        <v-flex xs12 sm6>
+            <v-card>
+                <v-img
+                    :src="imageHost + '/' + imagePath"
+                    :lazy-src="imageHost + '/' + imagePath"
+                    aspect-ratio="1"
+                    class="grey lighten-2">
+                    <v-layout
+                        slot="placeholder"
+                        fill-height
+                        align-center
+                        justify-center
+                        ma-0>
+                        <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
+                    </v-layout>
+                </v-img>
+                <v-card-title>
+                    <div class="text-xs-left">
+                        <div>Posted on {{dateTime}}</div>
+                        <v-rating v-model="gradeNumber" readonly small color="#f00"></v-rating>
+                        <div>{{comment}}</div>
+                    </div>
+                </v-card-title>
+            </v-card>
+        </v-flex>
+    </v-layout>
 </template>
 
 <script>
-    import { XImg, Card, Rater } from 'vux';
     import env from '@/../config/env';
 
     export default {
         name: 'food-grade',
-        components: {
-            XImg,
-            Card,
-            Rater
-        },
         data () {
             return {
                 imageHost: env.imageHost,
@@ -46,41 +56,15 @@
         mounted () {
         },
         computed: {
-            leftOptions () {
-                return {
-                    showBack: true,
-                    backText: '',
-                    preventGoBack: true
-                };
+            gradeNumber () {
+                return parseInt(this.grade, 10);
             }
         },
         methods: {
-            handleBackClicked () {
-                console.log('back');
-            },
-            handleCameraClicked () {
-                console.log('clicked');
-                this.$router.push('/food-upload');
-            },
-            success (src, ele) {
-                console.log('success load', src, ele);
-            },
-            error (src, ele, msg) {
-                console.log('error load', msg, src);
-                ele.src = this.errorSrc;
-            }
         }
     };
 </script>
 
 <style scoped>
-    .ximg-normal {
-        width: 100%;
-        height: auto;
-    }
-
-    .ximg-error {
-        background-color: transparent;
-    }
 </style>
 

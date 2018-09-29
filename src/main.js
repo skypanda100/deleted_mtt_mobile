@@ -8,9 +8,14 @@ import router from './router';
 import Croppa from 'vue-croppa';
 import 'vue-croppa/dist/vue-croppa.css';
 import store from './store';
+import Vuetify from 'vuetify';
+import 'vuetify/dist/vuetify.min.css';
+import 'material-design-icons-iconfont/dist/material-design-icons.css';
+import 'babel-polyfill';
 
 Vue.use(Croppa);
 Vue.use(VueRouter);
+Vue.use(Vuetify);
 
 FastClick.attach(document.body);
 

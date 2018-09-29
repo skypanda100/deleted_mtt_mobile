@@ -1,35 +1,37 @@
 <template>
-    <div id="app" class="container">
-        <div>
-            <sticky :check-sticky-support="false">
-                <x-header
-                    title="MTT"
-                    style="width:100%;position:absolute;left:0;top:0;z-index:100;background-color: #333"
-                    :left-options="showBack">
-                    <span slot="right" v-if="showCamera">
-                        <x-icon type="camera" style="fill:#fff;" @click="handleCameraClicked"></x-icon>
-                    </span>
-                </x-header>
-            </sticky>
-        </div>
-        <br>
-        <br>
-        <div style="padding: 2px">
-            <router-view></router-view>
-        </div>
-    </div>
+    <v-app>
+        <v-navigation-drawer
+            v-model="showDrawer"
+            clipped
+            fixed
+            app>
+        </v-navigation-drawer>
+        <v-toolbar dark color="primary">
+            <v-btn icon @click.native="handleBackClicked">
+                <v-icon v-if="showBack">backspace</v-icon>
+            </v-btn>
+            <v-toolbar-title>MTT</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn icon @click.native="handleCameraClicked">
+                <v-icon v-if="showCamera">camera</v-icon>
+            </v-btn>
+        </v-toolbar>
+        <v-content>
+            <!--<v-container>-->
+                <router-view></router-view>
+            <!--</v-container>-->
+        </v-content>
+        <v-footer></v-footer>
+    </v-app>
 </template>
 
 <script>
-    import { Sticky, XHeader, Group, Cell } from 'vux';
-
     export default {
         name: 'app',
-        components: {
-            Sticky,
-            XHeader,
-            Group,
-            Cell
+        data () {
+            return {
+                showDrawer: false
+            };
         },
         computed: {
             route () {
@@ -39,13 +41,9 @@
                 let path = this.route.path.trim();
                 path = path.replace('/', '');
                 if (path === '') {
-                    return {
-                        showBack: false
-                    };
+                    return false;
                 }
-                return {
-                    showBack: true
-                };
+                return true;
             },
             showCamera () {
                 return this.route.path === '/food-grades' || this.route.path === '/food-grade';
@@ -57,20 +55,13 @@
             handleCameraClicked () {
                 console.log('clicked');
                 this.$router.push('/food-upload');
+            },
+            handleBackClicked () {
+                this.$router.go(-1);
             }
         }
     };
 </script>
 
 <style lang="less">
-    @import '~vux/src/styles/reset.less';
-
-    html, body {
-        width: 100%;
-        overflow-x: hidden;
-        background-color: #fff;
-    }
-
-    .container {
-    }
 </style>
