@@ -2,6 +2,9 @@
     <v-layout>
         <v-flex xs12 sm6 offset-sm3>
             <v-card>
+                <v-card-title primary-title>
+                    <h4>{{dateTime}}</h4>
+                </v-card-title>
                 <v-list two-line>
                     <v-list-tile>
                         <v-list-tile-content>
