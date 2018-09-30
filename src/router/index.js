@@ -15,21 +15,24 @@ export default new Router({
             name: 'Home',
             cName: '主页',
             isInHome: true,
-            component: Home
+            component: Home,
+            icon: 'home'
         },
         {
             path: '/air-grade',
             name: 'AirGrade',
             cName: '空气质量',
             isInHome: true,
-            component: AirGrade
+            component: AirGrade,
+            icon: 'cloud'
         },
         {
             path: '/food-grades',
             name: 'FoodGrades',
             cName: '食物评分',
             isInHome: true,
-            component: FoodGrades
+            component: FoodGrades,
+            icon: 'restaurant'
         },
         {
             path: '/food-grade',

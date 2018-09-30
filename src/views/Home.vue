@@ -19,6 +19,9 @@
             </v-card>
             <v-list class="pt-0">
                 <v-list-tile v-for="route in routes" v-if="route.isInHome && route.name !== 'Home'" @click="goNext(route.path)" :key="route.path">
+                    <v-list-tile-avatar>
+                        <v-icon>{{route.icon}}</v-icon>
+                    </v-list-tile-avatar>
                     <v-list-tile-content>
                         <v-list-tile-title>{{route.cName}}</v-list-tile-title>
                     </v-list-tile-content>
