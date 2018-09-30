@@ -19,7 +19,7 @@
                 <v-card-title>
                     <div class="text-xs-left">
                         <div>Posted on {{dateTime}}</div>
-                        <v-rating v-model="gradeNumber" readonly small color="#f00"></v-rating>
+                        <v-rating v-model="gradeNumber" dense readonly color="#f00"></v-rating>
                         <div>{{comment}}</div>
                     </div>
                 </v-card-title>

@@ -1,29 +1,42 @@
 <template>
-    <div>
-        <img style="width: 100%;height: 100%" src="../assets/mtt.jpg"/>
-        <v-list dense class="pt-0">
-            <v-list-tile
-                @click="goNext('/air-grade')">
-                <v-list-tile-content>
-                    <v-list-tile-title>空气质量</v-list-tile-title>
-                </v-list-tile-content>
-            </v-list-tile>
-            <v-list-tile
-                @click="goNext('/food-grades')">
-                <v-list-tile-content>
-                    <v-list-tile-title>食物评分</v-list-tile-title>
-                </v-list-tile-content>
-            </v-list-tile>
-        </v-list>
-    </div>
+    <v-layout>
+        <v-flex xs12 sm6>
+            <v-card>
+                <v-img
+                    src="/static/mtt.jpg"
+                    lazy-src="/static/mtt.jpg"
+                    aspect-ratio="1"
+                    class="grey lighten-2">
+                    <v-layout
+                        slot="placeholder"
+                        fill-height
+                        align-center
+                        justify-center
+                        ma-0>
+                        <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
+                    </v-layout>
+                </v-img>
+            </v-card>
+            <v-list class="pt-0">
+                <v-list-tile v-for="route in routes" v-if="route.isInHome && route.name !== 'Home'" @click="goNext(route.path)" :key="route.path">
+                    <v-list-tile-content>
+                        <v-list-tile-title>{{route.cName}}</v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
+            </v-list>
+        </v-flex>
+    </v-layout>
 </template>
 
 <script>
+    import router from '../router';
+
     export default {
         name: 'home',
         computed: {
-        },
-        mounted () {
+            routes () {
+                return router.options.routes;
+            }
         },
         methods: {
             goNext (url) {

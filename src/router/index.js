@@ -13,21 +13,28 @@ export default new Router({
         {
             path: '/',
             name: 'Home',
+            cName: '主页',
+            isInHome: true,
             component: Home
         },
         {
             path: '/air-grade',
             name: 'AirGrade',
+            cName: '空气质量',
+            isInHome: true,
             component: AirGrade
         },
         {
             path: '/food-grades',
             name: 'FoodGrades',
+            cName: '食物评分',
+            isInHome: true,
             component: FoodGrades
         },
         {
             path: '/food-grade',
             name: 'FoodGrade',
+            isInHome: false,
             component: FoodGrade,
             props: (route) => ({
                 imagePath: route.query.imagePath,
@@ -39,6 +46,7 @@ export default new Router({
         {
             path: '/food-upload',
             name: 'FoodUpload',
+            isInHome: false,
             component: FoodUpload
         }
     ]

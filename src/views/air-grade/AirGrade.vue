@@ -1,76 +1,85 @@
 <template>
-    <div>
-        <group :title="dateTime">
-            <cell title="temp(℃)" :inline-desc="temp">
-                <rater v-model="tempGrade"></rater>
-            </cell>
-            <cell title="humidity(%)" :inline-desc="humidity">
-                <rater v-model="humidityGrade"></rater>
-            </cell>
-            <cell title="pm2.5(AQI)" :inline-desc="pm25">
-                <rater v-model="pm25Grade"></rater>
-            </cell>
-            <cell title="co2(PPM)" :inline-desc="co2">
-                <rater v-model="co2Grade"></rater>
-            </cell>
-            <cell title="hcho(mg/m3)" :inline-desc="hcho">
-                <rater v-model="hchoGrade"></rater>
-            </cell>
-        </group>
-
-        <divider>temperature</divider>
-        <v-chart :data="tempData" prevent-default>
-            <v-scale x :tick-count="3" />
-            <v-tooltip :show-item-marker="false" show-x-value />
-            <v-line shape="smooth" :colors="gradient"/>
-        </v-chart>
-
-        <divider>humidity</divider>
-        <v-chart :data="humidityData" prevent-default>
-            <v-scale x :tick-count="3" />
-            <v-tooltip :show-item-marker="false" show-x-value />
-            <v-line shape="smooth" :colors="gradient"/>
-        </v-chart>
-
-        <divider>pm2.5</divider>
-        <v-chart :data="pm25Data" prevent-default>
-            <v-scale x :tick-count="3" />
-            <v-tooltip :show-item-marker="false" show-x-value />
-            <v-line shape="smooth" :colors="gradient"/>
-        </v-chart>
-
-        <divider>co2</divider>
-        <v-chart :data="co2Data" prevent-default>
-            <v-scale x :tick-count="3" />
-            <v-tooltip :show-item-marker="false" show-x-value />
-            <v-line shape="smooth" :colors="gradient"/>
-        </v-chart>
-
-        <divider>hcho</divider>
-        <v-chart :data="hchoData" prevent-default>
-            <v-scale x :tick-count="3" />
-            <v-tooltip :show-item-marker="false" show-x-value />
-            <v-line shape="smooth" :colors="gradient"/>
-        </v-chart>
-    </div>
+    <v-layout>
+        <v-flex xs12 sm6 offset-sm3>
+            <v-card>
+                <v-list two-line>
+                    <v-list-tile>
+                        <v-list-tile-content>
+                            <v-list-tile-title>temperature(℃)</v-list-tile-title>
+                            <v-list-tile-sub-title><v-rating v-model="tempGrade" readonly color="#f00"></v-rating></v-list-tile-sub-title>
+                        </v-list-tile-content>
+                        <v-list-tile-action>
+                            <v-list-tile-action-text>{{ temp }}</v-list-tile-action-text>
+                        </v-list-tile-action>
+                    </v-list-tile>
+                    <v-list-tile>
+                        <v-list-tile-content>
+                            <v-list-tile-title>humidity(%)</v-list-tile-title>
+                            <v-list-tile-sub-title><v-rating v-model="humidityGrade" readonly color="#f00"></v-rating></v-list-tile-sub-title>
+                        </v-list-tile-content>
+                        <v-list-tile-action>
+                            <v-list-tile-action-text>{{ humidity }}</v-list-tile-action-text>
+                        </v-list-tile-action>
+                    </v-list-tile>
+                    <v-list-tile>
+                        <v-list-tile-content>
+                            <v-list-tile-title>pm2.5(AQI)</v-list-tile-title>
+                            <v-list-tile-sub-title><v-rating v-model="pm25Grade" readonly color="#f00"></v-rating></v-list-tile-sub-title>
+                        </v-list-tile-content>
+                        <v-list-tile-action>
+                            <v-list-tile-action-text>{{ pm25 }}</v-list-tile-action-text>
+                        </v-list-tile-action>
+                    </v-list-tile>
+                    <v-list-tile>
+                        <v-list-tile-content>
+                            <v-list-tile-title>co2(PPM)</v-list-tile-title>
+                            <v-list-tile-sub-title><v-rating v-model="co2Grade" readonly color="#f00"></v-rating></v-list-tile-sub-title>
+                        </v-list-tile-content>
+                        <v-list-tile-action>
+                            <v-list-tile-action-text>{{ co2 }}</v-list-tile-action-text>
+                        </v-list-tile-action>
+                    </v-list-tile>
+                    <v-list-tile>
+                        <v-list-tile-content>
+                            <v-list-tile-title>hcho(mg/m3)</v-list-tile-title>
+                            <v-list-tile-sub-title><v-rating v-model="hchoGrade" readonly color="#f00"></v-rating></v-list-tile-sub-title>
+                        </v-list-tile-content>
+                        <v-list-tile-action>
+                            <v-list-tile-action-text>{{ hcho }}</v-list-tile-action-text>
+                        </v-list-tile-action>
+                    </v-list-tile>
+                </v-list>
+            </v-card>
+            <br>
+            <v-card>
+                <canvas id="tempCanvas" class="chartContainer"></canvas>
+            </v-card>
+            <br>
+            <v-card>
+                <canvas id="humidityCanvas" class="chartContainer"></canvas>
+            </v-card>
+            <br>
+            <v-card>
+                <canvas id="pm25Canvas" class="chartContainer"></canvas>
+            </v-card>
+            <br>
+            <v-card>
+                <canvas id="co2Canvas" class="chartContainer"></canvas>
+            </v-card>
+            <br>
+            <v-card>
+                <canvas id="hchoCanvas" class="chartContainer"></canvas>
+            </v-card>
+        </v-flex>
+    </v-layout>
 </template>
 
 <script>
-    import { Rater, Group, Cell, Divider, VChart, VTooltip, VLine, VScale } from 'vux';
     import { fetchLastAirGrade, fetchHistoryAirGrade } from '@/api/air-grade';
+    import F2 from '@antv/f2';
 
     export default {
         name: 'air-grade',
-        components: {
-            Rater,
-            Group,
-            Cell,
-            Divider,
-            VChart,
-            VTooltip,
-            VLine,
-            VScale
-        },
         data () {
             return {
                 lastAirGrade: null,
@@ -85,15 +94,56 @@
                 co2: '',
                 hchoGrade: 0,
                 hcho: '',
-                gradient: [
-                    [0, '#F2C587'],
-                    [0.5, '#ED7973'],
-                    [1, '#8659AF']
-                ],
+                tempDef: {
+                    date: {
+                        type: 'timeCat',
+                        mask: 'hh:mm',
+                        tickCount: 3
+                    },
+                    value: {
+                        alias: '温度'
+                    }
+                },
                 tempData: [{ date: '', value: 0 }],
+                humidityDef: {
+                    date: {
+                        type: 'timeCat',
+                        tickCount: 3
+                    },
+                    value: {
+                        alias: '湿度'
+                    }
+                },
                 humidityData: [{ date: '', value: 0 }],
+                pm25Def: {
+                    date: {
+                        type: 'timeCat',
+                        tickCount: 3
+                    },
+                    value: {
+                        alias: 'PM2.5'
+                    }
+                },
                 pm25Data: [{ date: '', value: 0 }],
+                co2Def: {
+                    date: {
+                        type: 'timeCat',
+                        tickCount: 3
+                    },
+                    value: {
+                        alias: '二氧化碳'
+                    }
+                },
                 co2Data: [{ date: '', value: 0 }],
+                hchoDef: {
+                    date: {
+                        type: 'timeCat',
+                        tickCount: 3
+                    },
+                    value: {
+                        alias: '甲醛'
+                    }
+                },
                 hchoData: [{ date: '', value: 0 }]
             };
         },
@@ -183,32 +233,95 @@
             }
         },
         computed: {
-            leftOptions () {
-                return {
-                    showBack: true,
-                    backText: '',
-                    preventGoBack: true
-                };
-            }
         },
         mounted () {
             fetchLastAirGrade().then(response => {
                 this.lastAirGrade = response.data;
             });
             fetchHistoryAirGrade().then(response => {
-                console.log(response.data);
                 this.tempData = response.data.temp;
                 this.humidityData = response.data.humidity;
                 this.hchoData = response.data.hcho;
                 this.pm25Data = response.data.pm2_5;
                 this.co2Data = response.data.co2;
+
+                this.initCharts();
             });
         },
         methods: {
+            initCharts () {
+                // temp
+                let tempChart = new F2.Chart({
+                    id: 'tempCanvas',
+                    pixelRatio: window.devicePixelRatio
+                });
+                tempChart.source(this.tempData, this.tempDef);
+                tempChart.tooltip({
+                    showCrosshairs: true
+                });
+                tempChart.line().position('date*value').shape('smooth').color('l(0) 0:#F2C587 0.5:#ED7973 1:#8659AF');
+                tempChart.area().position('date*value').shape('smooth').color('l(0) 0:#F2C587 0.5:#ED7973 1:#8659AF');
+                tempChart.render();
+
+                // humidity
+                let humidityChart = new F2.Chart({
+                    id: 'humidityCanvas',
+                    pixelRatio: window.devicePixelRatio
+                });
+                humidityChart.source(this.humidityData, this.humidityDef);
+                humidityChart.tooltip({
+                    showCrosshairs: true
+                });
+                humidityChart.line().position('date*value').shape('smooth').color('l(0) 0:#F2C587 0.5:#ED7973 1:#8659AF');
+                humidityChart.area().position('date*value').shape('smooth').color('l(0) 0:#F2C587 0.5:#ED7973 1:#8659AF');
+                humidityChart.render();
+
+                // pm25
+                let pm25Chart = new F2.Chart({
+                    id: 'pm25Canvas',
+                    pixelRatio: window.devicePixelRatio
+                });
+                pm25Chart.source(this.pm25Data, this.pm25Def);
+                pm25Chart.tooltip({
+                    showCrosshairs: true
+                });
+                pm25Chart.line().position('date*value').shape('smooth').color('l(0) 0:#F2C587 0.5:#ED7973 1:#8659AF');
+                pm25Chart.area().position('date*value').shape('smooth').color('l(0) 0:#F2C587 0.5:#ED7973 1:#8659AF');
+                pm25Chart.render();
+
+                // co2
+                let co2Chart = new F2.Chart({
+                    id: 'co2Canvas',
+                    pixelRatio: window.devicePixelRatio
+                });
+                co2Chart.source(this.co2Data, this.co2Def);
+                co2Chart.tooltip({
+                    showCrosshairs: true
+                });
+                co2Chart.line().position('date*value').shape('smooth').color('l(0) 0:#F2C587 0.5:#ED7973 1:#8659AF');
+                co2Chart.area().position('date*value').shape('smooth').color('l(0) 0:#F2C587 0.5:#ED7973 1:#8659AF');
+                co2Chart.render();
+
+                // hcho
+                let hchoChart = new F2.Chart({
+                    id: 'hchoCanvas',
+                    pixelRatio: window.devicePixelRatio
+                });
+                hchoChart.source(this.hchoData, this.hchoDef);
+                hchoChart.tooltip({
+                    showCrosshairs: true
+                });
+                hchoChart.line().position('date*value').shape('smooth').color('l(0) 0:#F2C587 0.5:#ED7973 1:#8659AF');
+                hchoChart.area().position('date*value').shape('smooth').color('l(0) 0:#F2C587 0.5:#ED7973 1:#8659AF');
+                hchoChart.render();
+            }
         }
     };
 </script>
 
 <style scoped>
-
+.chartContainer {
+    width: 100%;
+    height: 100%;
+}
 </style>

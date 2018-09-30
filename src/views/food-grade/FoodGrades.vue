@@ -24,9 +24,9 @@
                                     </v-layout>
                                 </v-img>
                                 <v-card-title>
-                                    <div class="text-xs-center">
+                                    <div class="text-xs-left" style="font-size: 10px">
                                         <div>{{src.dateTime}}</div>
-                                        <v-rating v-model="src.grade" readonly small color="#f00"></v-rating>
+                                        <v-rating v-model="src.grade" dense readonly color="#f00" :size="10"></v-rating>
                                     </div>
                                 </v-card-title>
                             </v-card>

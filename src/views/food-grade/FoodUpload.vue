@@ -1,62 +1,61 @@
 <template>
-<div>
-    <toast v-model="isShowToast" type="text" :time="2000" is-show-mask :text="toastText">
-    </toast>
-    <div v-transfer-dom>
-        <loading :show="isShowLoading" :text="loadingText"></loading>
-    </div>
-    <div style="padding: 10px;text-align: center">
-        <croppa
-            style="width: 100%;height: 100vmin"
-            placeholder=""
-            :show-loading="true"
-            :auto-sizing="true"
-            @file-choose="handleImageChoose"
-            @image-remove="handleImageRemove"
-            v-model="myCroppa">
-        </croppa>
-        <rater v-model="grade"></rater>
-        <datetime
-            v-model="dateTime"
-            format="YYYY-MM-DD HH:mm"
-            title="日期">
-        </datetime>
-        <x-textarea
-            placeholder="说点啥吧"
-            v-model="comment"
-            :rows="5">
-        </x-textarea>
-    </div>
-    <x-button type="primary" :disabled="image == null" @click.native="handleFinishClicked">保存</x-button>
-</div>
+    <v-layout>
+        <v-dialog
+            v-model="isShowLoading"
+            hide-overlay
+            persistent
+            width="300">
+            <v-card>
+                <v-card-text>
+                    uploading
+                    <v-progress-linear
+                        color="white"
+                        class="mb-0"
+                        v-model="loadingValue"
+                    ></v-progress-linear>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
+        <v-flex xs12 sm6>
+            <v-card>
+                <croppa
+                    style="width: 100%;height: 100vmin"
+                    placeholder=""
+                    :show-loading="true"
+                    :auto-sizing="true"
+                    @file-choose="handleImageChoose"
+                    @image-remove="handleImageRemove"
+                    v-model="myCroppa">
+                </croppa>
+                <v-card-title>
+                    <v-rating v-model="grade" color="#f00"></v-rating>
+                    <v-textarea
+                        solo
+                        label="说点啥吧"
+                        full-width
+                        v-model="comment"
+                    ></v-textarea>
+                </v-card-title>
+                <v-card-actions>
+                    <v-btn flat color="primary" @click.native="handleFinishClicked">保存</v-btn>
+                    <v-btn flat color="black" @click.native="clearAll">取消</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-flex>
+    </v-layout>
 </template>
 
 <script>
-    import { Toast, Loading, TransferDomDirective as TransferDom, Group, Cell, Rater, XTextarea, Datetime, XButton } from 'vux';
     import util from '@/libs/util';
     import { saveFoodGrade } from '@/api/food-grade';
 
     export default {
         name: 'food-upload',
-        directives: {
-            TransferDom
-        },
-        components: {
-            Toast,
-            Loading,
-            Group,
-            Cell,
-            Rater,
-            XTextarea,
-            Datetime,
-            XButton
-        },
         data () {
             return {
                 isShowToast: false,
-                toastText: '',
                 isShowLoading: false,
-                loadingText: '',
+                loadingValue: 0,
                 myCroppa: {},
                 grade: 0,
                 dateTime: util.formatDate(new Date(), 'yyyy-MM-dd hh:mm'),
@@ -69,7 +68,7 @@
         methods: {
             clearAll () {
                 this.isShowLoading = false;
-                this.loadingText = '';
+                this.loadingValue = 0;
                 this.myCroppa.remove();
                 this.grade = 0;
                 this.dateTime = util.formatDate(new Date(), 'yyyy-MM-dd hh:mm');
@@ -88,7 +87,6 @@
                         console.log(data);
                         if (data.status === 200) {
                             this.isShowToast = true;
-                            this.toastText = '保存成功';
                         }
                     }).catch(err => {
                         console.log(err);
@@ -107,7 +105,7 @@
                     console.log(num);
                     if (num >= 0 && num < 100) {
                         this.isShowLoading = true;
-                        this.loadingText = num + '%';
+                        this.loadingValue = num;
                     } else {
                         this.clearAll();
                     }

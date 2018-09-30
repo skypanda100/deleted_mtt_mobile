@@ -5,11 +5,16 @@
             clipped
             fixed
             app>
+            <v-list class="pt-0">
+                <v-list-tile v-for="route in routes" v-if="route.isInHome" @click="goNext(route.path)" :key="route.path">
+                    <v-list-tile-content>
+                        <v-list-tile-title>{{route.cName}}</v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
+            </v-list>
         </v-navigation-drawer>
-        <v-toolbar dark color="primary">
-            <v-btn icon @click.native="handleBackClicked">
-                <v-icon v-if="showBack">backspace</v-icon>
-            </v-btn>
+        <v-toolbar app dark color="primary" fixed>
+            <v-toolbar-side-icon @click.stop="showDrawer = !showDrawer"></v-toolbar-side-icon>
             <v-toolbar-title>MTT</v-toolbar-title>
             <v-spacer></v-spacer>
             <v-btn icon @click.native="handleCameraClicked">
@@ -17,15 +22,17 @@
             </v-btn>
         </v-toolbar>
         <v-content>
-            <!--<v-container>-->
+            <v-container>
                 <router-view></router-view>
-            <!--</v-container>-->
+            </v-container>
         </v-content>
         <v-footer></v-footer>
     </v-app>
 </template>
 
 <script>
+    import router from './router';
+
     export default {
         name: 'app',
         data () {
@@ -47,6 +54,9 @@
             },
             showCamera () {
                 return this.route.path === '/food-grades' || this.route.path === '/food-grade';
+            },
+            routes () {
+                return router.options.routes;
             }
         },
         mounted () {
@@ -56,8 +66,8 @@
                 console.log('clicked');
                 this.$router.push('/food-upload');
             },
-            handleBackClicked () {
-                this.$router.go(-1);
+            goNext (url) {
+                this.$router.push(url);
             }
         }
     };
