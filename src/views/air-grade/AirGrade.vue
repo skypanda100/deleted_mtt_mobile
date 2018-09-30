@@ -52,22 +52,37 @@
             </v-card>
             <br>
             <v-card>
+                <v-card-title primary-title>
+                    <h3>温度</h3>
+                </v-card-title>
                 <canvas id="tempCanvas" class="chartContainer"></canvas>
             </v-card>
             <br>
             <v-card>
+                <v-card-title primary-title>
+                    <h3>湿度</h3>
+                </v-card-title>
                 <canvas id="humidityCanvas" class="chartContainer"></canvas>
             </v-card>
             <br>
             <v-card>
+                <v-card-title primary-title>
+                    <h3>PM2.5</h3>
+                </v-card-title>
                 <canvas id="pm25Canvas" class="chartContainer"></canvas>
             </v-card>
             <br>
             <v-card>
+                <v-card-title primary-title>
+                    <h3>二氧化碳</h3>
+                </v-card-title>
                 <canvas id="co2Canvas" class="chartContainer"></canvas>
             </v-card>
             <br>
             <v-card>
+                <v-card-title primary-title>
+                    <h3>甲醛</h3>
+                </v-card-title>
                 <canvas id="hchoCanvas" class="chartContainer"></canvas>
             </v-card>
         </v-flex>
@@ -108,6 +123,7 @@
                 humidityDef: {
                     date: {
                         type: 'timeCat',
+                        mask: 'hh:mm',
                         tickCount: 3
                     },
                     value: {
@@ -118,6 +134,7 @@
                 pm25Def: {
                     date: {
                         type: 'timeCat',
+                        mask: 'hh:mm',
                         tickCount: 3
                     },
                     value: {
@@ -128,6 +145,7 @@
                 co2Def: {
                     date: {
                         type: 'timeCat',
+                        mask: 'hh:mm',
                         tickCount: 3
                     },
                     value: {
@@ -138,6 +156,7 @@
                 hchoDef: {
                     date: {
                         type: 'timeCat',
+                        mask: 'hh:mm',
                         tickCount: 3
                     },
                     value: {
