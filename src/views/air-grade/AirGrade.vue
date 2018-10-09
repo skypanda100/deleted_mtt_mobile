@@ -115,7 +115,7 @@
                 tempDef: {
                     date: {
                         type: 'timeCat',
-                        mask: 'hh:mm',
+                        mask: 'MM-DD\nHH:mm',
                         tickCount: 3
                     },
                     value: {
@@ -126,7 +126,7 @@
                 humidityDef: {
                     date: {
                         type: 'timeCat',
-                        mask: 'hh:mm',
+                        mask: 'MM-DD\nHH:mm',
                         tickCount: 3
                     },
                     value: {
@@ -137,7 +137,7 @@
                 pm25Def: {
                     date: {
                         type: 'timeCat',
-                        mask: 'hh:mm',
+                        mask: 'MM-DD\nHH:mm',
                         tickCount: 3
                     },
                     value: {
@@ -148,7 +148,7 @@
                 co2Def: {
                     date: {
                         type: 'timeCat',
-                        mask: 'hh:mm',
+                        mask: 'MM-DD\nHH:mm',
                         tickCount: 3
                     },
                     value: {
@@ -159,7 +159,7 @@
                 hchoDef: {
                     date: {
                         type: 'timeCat',
-                        mask: 'hh:mm',
+                        mask: 'MM-DD\nHH:mm',
                         tickCount: 3
                     },
                     value: {
