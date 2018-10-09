@@ -17,7 +17,8 @@
             </v-list>
         </v-navigation-drawer>
         <v-toolbar app dark color="primary" fixed>
-            <v-toolbar-side-icon @click.stop="showDrawer = !showDrawer"></v-toolbar-side-icon>
+        <!--<v-toolbar app fixed>-->
+        <v-toolbar-side-icon @click.stop="showDrawer = !showDrawer"></v-toolbar-side-icon>
             <v-toolbar-title>MTT</v-toolbar-title>
             <v-spacer></v-spacer>
             <v-btn icon @click.native="handleCameraClicked">
@@ -25,9 +26,11 @@
             </v-btn>
         </v-toolbar>
         <v-content>
-            <v-container>
-                <router-view></router-view>
-            </v-container>
+            <!--<v-container>-->
+                <keep-alive>
+                    <router-view></router-view>
+                </keep-alive>
+            <!--</v-container>-->
         </v-content>
         <v-footer></v-footer>
     </v-app>
