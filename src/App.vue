@@ -26,11 +26,11 @@
             </v-btn>
         </v-toolbar>
         <v-content>
-            <!--<v-container>-->
+            <v-container fluid grid-list-sm>
                 <keep-alive>
                     <router-view></router-view>
                 </keep-alive>
-            <!--</v-container>-->
+            </v-container>
         </v-content>
         <v-footer></v-footer>
     </v-app>

@@ -1,38 +1,30 @@
 <template>
-    <v-layout>
-        <v-flex xs12 sm6>
-            <v-card>
-                <v-container grid-list-sm fluid>
-                    <v-layout row wrap>
-                        <v-flex
-                            v-for="(src, index) in list"
-                            :key="index"
-                            xs6>
-                            <v-card :to="{path: `/food-grade?imagePath=${src.imagePath}&grade=${src.grade}&dateTime=${src.dateTime}&comment=${src.comment}`}">
-                                <v-img
-                                    :src="imageHost + '/' + src.imagePath"
-                                    :lazy-src="imageHost + '/' + src.imagePath"
-                                    aspect-ratio="1"
-                                    class="grey lighten-2">
-                                    <v-layout
-                                        slot="placeholder"
-                                        fill-height
-                                        align-center
-                                        justify-center
-                                        ma-0>
-                                        <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
-                                    </v-layout>
-                                </v-img>
-                                <v-card-title>
-                                    <div class="text-xs-left" style="font-size: 10px">
-                                        <div>{{src.dateTime}}</div>
-                                        <v-rating v-model="src.grade" dense readonly color="#f00" :size="10"></v-rating>
-                                    </div>
-                                </v-card-title>
-                            </v-card>
-                        </v-flex>
+    <v-layout row wrap>
+        <v-flex
+            v-for="(src, index) in list"
+            :key="index"
+            xs6>
+            <v-card :to="{path: `/food-grade?imagePath=${src.imagePath}&grade=${src.grade}&dateTime=${src.dateTime}&comment=${src.comment}`}">
+                <v-img
+                    :src="imageHost + '/' + src.imagePath"
+                    :lazy-src="imageHost + '/' + src.imagePath"
+                    aspect-ratio="1"
+                    class="grey lighten-2">
+                    <v-layout
+                        slot="placeholder"
+                        fill-height
+                        align-center
+                        justify-center
+                        ma-0>
+                        <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
                     </v-layout>
-                </v-container>
+                </v-img>
+                <v-card-title>
+                    <div class="text-xs-left" style="font-size: 10px">
+                        <div>{{src.dateTime}}</div>
+                        <v-rating v-model="src.grade" dense readonly color="#f00" :size="10"></v-rating>
+                    </div>
+                </v-card-title>
             </v-card>
         </v-flex>
     </v-layout>
