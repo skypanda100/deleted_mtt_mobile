@@ -16,7 +16,10 @@ export default new Router({
             cName: '主页',
             isInHome: true,
             component: Home,
-            icon: 'home'
+            icon: 'home',
+            meta: {
+                keepAlive: false
+            }
         },
         {
             path: '/air-grade',
@@ -24,7 +27,10 @@ export default new Router({
             cName: '空气质量',
             isInHome: true,
             component: AirGrade,
-            icon: 'cloud'
+            icon: 'cloud',
+            meta: {
+                keepAlive: false
+            }
         },
         {
             path: '/food-grades',
@@ -32,7 +38,11 @@ export default new Router({
             cName: '食物评分',
             isInHome: true,
             component: FoodGrades,
-            icon: 'restaurant'
+            icon: 'restaurant',
+            meta: {
+                keepAlive: true,
+                isBack: false
+            }
         },
         {
             path: '/food-grade',
@@ -44,13 +54,19 @@ export default new Router({
                 grade: route.query.grade,
                 dateTime: route.query.dateTime,
                 comment: route.query.comment
-            })
+            }),
+            meta: {
+                keepAlive: false
+            }
         },
         {
             path: '/food-upload',
             name: 'FoodUpload',
             isInHome: false,
-            component: FoodUpload
+            component: FoodUpload,
+            meta: {
+                keepAlive: false
+            }
         }
     ]
 });

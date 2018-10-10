@@ -33,11 +33,10 @@ router.beforeEach((to, from, next) => {
 });
 
 router.afterEach((to) => {
-    window.scrollTo(0, 0);
+    // window.scrollTo(0, 0);
     let route = {
         path: to.path,
         name: to.name
     };
-    console.log(route);
     store.dispatch('SwitchRoute', route);
 });

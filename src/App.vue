@@ -27,9 +27,12 @@
         </v-toolbar>
         <v-content>
             <v-container fluid grid-list-sm>
-                <!--<keep-alive>-->
-                    <router-view></router-view>
-                <!--</keep-alive>-->
+                <keep-alive>
+                    <router-view v-if="$route.meta.keepAlive">
+                    </router-view>
+                </keep-alive>
+                <router-view v-if="!$route.meta.keepAlive">
+                </router-view>
             </v-container>
         </v-content>
         <v-footer></v-footer>

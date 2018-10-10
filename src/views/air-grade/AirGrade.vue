@@ -116,7 +116,8 @@
                     date: {
                         type: 'timeCat',
                         mask: 'MM-DD\nHH:mm',
-                        tickCount: 3
+                        tickCount: 3,
+                        range: [0, 1]
                     },
                     value: {
                         alias: '温度'
@@ -279,6 +280,11 @@
                 });
                 tempChart.source(this.tempData, this.tempDef);
                 tempChart.tooltip({
+                    showItemMarker: false,
+                    onShow: function onShow (ev) {
+                        var items = ev.items;
+                        items[0].name = items[0].title.replace('\n', ' ');
+                    },
                     showCrosshairs: true
                 });
                 tempChart.line().position('date*value').shape('smooth').color('l(0) 0:#F2C587 0.5:#ED7973 1:#8659AF');
@@ -292,6 +298,11 @@
                 });
                 humidityChart.source(this.humidityData, this.humidityDef);
                 humidityChart.tooltip({
+                    showItemMarker: false,
+                    onShow: function onShow (ev) {
+                        var items = ev.items;
+                        items[0].name = items[0].title.replace('\n', ' ');
+                    },
                     showCrosshairs: true
                 });
                 humidityChart.line().position('date*value').shape('smooth').color('l(0) 0:#F2C587 0.5:#ED7973 1:#8659AF');
@@ -305,6 +316,11 @@
                 });
                 pm25Chart.source(this.pm25Data, this.pm25Def);
                 pm25Chart.tooltip({
+                    showItemMarker: false,
+                    onShow: function onShow (ev) {
+                        var items = ev.items;
+                        items[0].name = items[0].title.replace('\n', ' ');
+                    },
                     showCrosshairs: true
                 });
                 pm25Chart.line().position('date*value').shape('smooth').color('l(0) 0:#F2C587 0.5:#ED7973 1:#8659AF');
@@ -318,6 +334,11 @@
                 });
                 co2Chart.source(this.co2Data, this.co2Def);
                 co2Chart.tooltip({
+                    showItemMarker: false,
+                    onShow: function onShow (ev) {
+                        var items = ev.items;
+                        items[0].name = items[0].title.replace('\n', ' ');
+                    },
                     showCrosshairs: true
                 });
                 co2Chart.line().position('date*value').shape('smooth').color('l(0) 0:#F2C587 0.5:#ED7973 1:#8659AF');
@@ -331,6 +352,11 @@
                 });
                 hchoChart.source(this.hchoData, this.hchoDef);
                 hchoChart.tooltip({
+                    showItemMarker: false,
+                    onShow: function onShow (ev) {
+                        var items = ev.items;
+                        items[0].name = items[0].title.replace('\n', ' ');
+                    },
                     showCrosshairs: true
                 });
                 hchoChart.line().position('date*value').shape('smooth').color('l(0) 0:#F2C587 0.5:#ED7973 1:#8659AF');

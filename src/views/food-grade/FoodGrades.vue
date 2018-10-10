@@ -40,14 +40,39 @@
             return {
                 imageHost: env.imageHost,
                 list: [],
-                grade: '5'
+                grade: '5',
+                isFirstEnter: false
             };
         },
         mounted () {
-            fetchFoodGrade('-dateTime').then(response => {
-                this.list = response.data;
-                console.log(this.list);
-            });
+            this.isFirstEnter = true;
+        },
+        /**
+         * 不使用keep-alive
+         * beforeRouteEnter --> created --> mounted --> destroyed
+         * 使用keep-alive
+         * beforeRouteEnter --> created --> mounted --> activated --> deactivated
+         * 再次进入缓存的页面，只会触发beforeRouteEnter -->activated --> deactivated 。created和mounted不会再执行。
+         */
+        beforeRouteEnter (to, from, next) {
+            console.log(from.name, to.name);
+            if (from.name === 'FoodUpload' || from.name === 'FoodGrade') {
+                if (to.name === 'FoodGrades') {
+                    to.meta.isBack = true;
+                }
+            }
+            next();
+        },
+        activated () {
+            console.log(this.isFirstEnter);
+            if (!this.$route.meta.isBack || this.isFirstEnter) {
+                fetchFoodGrade('-dateTime').then(response => {
+                    this.list = response.data;
+                    console.log(this.list);
+                });
+            }
+            this.$route.meta.isBack = false;
+            this.isFirstEnter = false;
         },
         computed: {
             leftOptions () {
