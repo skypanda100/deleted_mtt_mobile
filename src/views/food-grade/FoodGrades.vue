@@ -56,7 +56,7 @@
          */
         beforeRouteEnter (to, from, next) {
             console.log(from.name, to.name);
-            if (from.name === 'FoodUpload' || from.name === 'FoodGrade') {
+            if (from.name === 'FoodGrade') {
                 if (to.name === 'FoodGrades') {
                     to.meta.isBack = true;
                 }
