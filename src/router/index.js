@@ -5,6 +5,8 @@ import FoodGrades from '@/views/food-grade/FoodGrades';
 import FoodGrade from '@/views/food-grade/FoodGrade';
 import FoodUpload from '@/views/food-grade/FoodUpload';
 import AirGrade from '@/views/air-grade/AirGrade';
+import SleepQuality from '@/views/sleep-quality/SleepQuality';
+import SleepUpload from '@/views/sleep-quality/SleepUpload';
 
 Vue.use(Router);
 
@@ -64,6 +66,26 @@ export default new Router({
             name: 'FoodUpload',
             isInHome: false,
             component: FoodUpload,
+            meta: {
+                keepAlive: false
+            }
+        },
+        {
+            path: '/sleep-quality',
+            name: 'SleepQuality',
+            cName: '睡眠质量',
+            isInHome: true,
+            component: SleepQuality,
+            icon: 'timer',
+            meta: {
+                keepAlive: false
+            }
+        },
+        {
+            path: '/sleep-upload',
+            name: 'SleepUpload',
+            isInHome: false,
+            component: SleepUpload,
             meta: {
                 keepAlive: false
             }

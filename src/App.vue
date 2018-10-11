@@ -21,8 +21,11 @@
         <v-toolbar-side-icon @click.stop="showDrawer = !showDrawer"></v-toolbar-side-icon>
             <v-toolbar-title>MTT</v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-btn icon @click.native="handleCameraClicked">
-                <v-icon v-if="showCamera">camera</v-icon>
+            <v-btn icon @click.native="handleCameraClicked" v-if="showCamera">
+                <v-icon>camera</v-icon>
+            </v-btn>
+            <v-btn icon @click.native="handleUploadClicked" v-if="showUpload">
+                <v-icon>save</v-icon>
             </v-btn>
         </v-toolbar>
         <v-content>
@@ -64,6 +67,9 @@
             showCamera () {
                 return this.route.path === '/food-grades' || this.route.path === '/food-grade';
             },
+            showUpload () {
+                return this.route.path === '/sleep-quality';
+            },
             routes () {
                 return router.options.routes;
             }
@@ -72,8 +78,10 @@
         },
         methods: {
             handleCameraClicked () {
-                console.log('clicked');
                 this.$router.push('/food-upload');
+            },
+            handleUploadClicked () {
+                this.$router.push('/sleep-upload');
             },
             goNext (url) {
                 this.$router.push(url);
