@@ -1,6 +1,6 @@
 import axios from 'axios';
 import env from '../../config/env';
-import { getToken } from './auth';
+import auth from './auth';
 
 const service = axios.create({
     baseURL: env.host,
@@ -9,7 +9,7 @@ const service = axios.create({
 });
 
 service.interceptors.request.use(config => {
-    config.headers['X-Token'] = getToken(); // 让每个请求携带token-- ['X-Token']为自定义key 请根据实际情况自行修改
+    config.headers['mtt-token'] = auth.getToken();
     return config;
 }, error => {
     Promise.reject(error);

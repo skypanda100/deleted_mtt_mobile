@@ -7,11 +7,21 @@ import FoodUpload from '@/views/food-grade/FoodUpload';
 import AirGrade from '@/views/air-grade/AirGrade';
 import SleepQuality from '@/views/sleep-quality/SleepQuality';
 import SleepUpload from '@/views/sleep-quality/SleepUpload';
+import Login from '@/views/Login';
 
 Vue.use(Router);
 
 export default new Router({
     routes: [
+        {
+            path: '/login',
+            name: 'Login',
+            isInHome: false,
+            component: Login,
+            meta: {
+                keepAlive: false
+            }
+        },
         {
             path: '/',
             name: 'Home',

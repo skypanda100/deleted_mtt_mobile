@@ -12,6 +12,7 @@ import Vuetify from 'vuetify';
 import 'vuetify/dist/vuetify.min.css';
 import 'material-design-icons-iconfont/dist/material-design-icons.css';
 import 'babel-polyfill';
+import auth from './libs/auth';
 
 Vue.use(Croppa);
 Vue.use(VueRouter);
@@ -21,15 +22,14 @@ FastClick.attach(document.body);
 
 Vue.config.productionTip = false;
 
-/* eslint-disable no-new */
-new Vue({
-    store,
-    router,
-    render: h => h(App)
-}).$mount('#app-box');
-
 router.beforeEach((to, from, next) => {
-    next();
+    if (!auth.getToken() && to.name !== 'Login') {
+        next({
+            name: 'Login'
+        });
+    } else {
+        next();
+    }
 });
 
 router.afterEach((to) => {
@@ -40,3 +40,10 @@ router.afterEach((to) => {
     };
     store.dispatch('SwitchRoute', route);
 });
+
+/* eslint-disable no-new */
+new Vue({
+    store,
+    router,
+    render: h => h(App)
+}).$mount('#app-box');
