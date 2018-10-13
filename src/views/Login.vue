@@ -1,34 +1,48 @@
 <template>
-    <v-container grid-list-xl text-xs-center>
-        <v-layout row wrap>
-            <v-flex xs12 offset-xs1>
-                <form ref="form">
-                    <v-text-field
-                        v-model="userName"
-                        :rules="userNameRules"
-                        label="用户"
-                        required
-                    ></v-text-field>
-                    <v-text-field
-                        v-model="password"
-                        :rules="passwordRules"
-                        label="密码"
-                        type="password"
-                        required
-                    ></v-text-field>
+    <v-layout>
+        <v-flex xs12 sm6>
+            <v-card>
+                <v-img
+                    src="/static/mtt.jpg"
+                    lazy-src="/static/mtt.jpg"
+                    aspect-ratio="1"
+                    class="grey lighten-2">
+                    <v-layout
+                        slot="placeholder"
+                        fill-height
+                        align-center
+                        justify-center
+                        ma-0>
+                        <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
+                    </v-layout>
+                </v-img>
+            </v-card>
 
-                    <v-btn @click="handleSubmitClicked">submit</v-btn>
-                    <v-btn @click="handleClearClicked">clear</v-btn>
-                </form>
-                <v-alert
-                    :value="alert"
-                    type="error"
-                    transition="scale-transition">
-                    {{message}}
-                </v-alert>
-            </v-flex>
-        </v-layout>
-    </v-container>
+            <form ref="form">
+                <v-text-field
+                    v-model="userName"
+                    :rules="userNameRules"
+                    label="用户"
+                    required
+                ></v-text-field>
+                <v-text-field
+                    v-model="password"
+                    :rules="passwordRules"
+                    label="密码"
+                    type="password"
+                    required
+                ></v-text-field>
+
+                <v-btn @click="handleSubmitClicked" block color="primary">登录</v-btn>
+            </form>
+            <v-alert
+                :value="alert"
+                type="error"
+                transition="scale-transition">
+                {{message}}
+            </v-alert>
+        </v-flex>
+    </v-layout>
 </template>
 
 <script>
@@ -46,12 +60,13 @@
                 message: '',
                 userName: util.isNull(auth.getUser()) ? '' : auth.getUser(),
                 userNameRules: [
-                    v => !!v || 'Name is required',
-                    v => v.length >= 3 || 'Name must be greater than 3 characters'
+                    v => !!v || '请输入用户名',
+                    v => v.length >= 3 || '用户名长度必须大于或等于3'
                 ],
                 password: util.isNull(auth.getPwd()) ? '' : auth.getPwd(),
                 passwordRules: [
-                    v => v.length >= 6 || 'Password must be greater than 6 characters'
+                    v => !!v || '请输入密码',
+                    v => v.length >= 6 || '密码长度必须大于或等于6'
                 ],
                 token: null
             };
