@@ -5,6 +5,22 @@
             clipped
             fixed
             app>
+            <v-card>
+                <v-img
+                    :src="imageHost + '/' + avatar"
+                    :lazy-src="imageHost + '/' + avatar"
+                    aspect-ratio="1"
+                    class="grey lighten-2">
+                    <v-layout
+                        slot="placeholder"
+                        fill-height
+                        align-center
+                        justify-center
+                        ma-0>
+                        <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
+                    </v-layout>
+                </v-img>
+            </v-card>
             <v-list class="pt-0">
                 <v-list-tile v-for="route in routes" v-if="route.isInHome" @click="goNext(route.path)" :key="route.path">
                     <v-list-tile-avatar>
@@ -44,15 +60,20 @@
 
 <script>
     import router from './router';
+    import env from '@/../config/env';
 
     export default {
         name: 'app',
         data () {
             return {
-                showDrawer: false
+                showDrawer: false,
+                imageHost: env.imageHost
             };
         },
         computed: {
+            avatar () {
+                return this.$store.state.avatar;
+            },
             route () {
                 return this.$store.state.route;
             },

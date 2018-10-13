@@ -68,7 +68,8 @@
                     v => !!v || '请输入密码',
                     v => v.length >= 6 || '密码长度必须大于或等于6'
                 ],
-                token: null
+                token: null,
+                avatar: ''
             };
         },
         mounted () {
@@ -78,11 +79,15 @@
                 auth.setToken(this.token);
                 auth.setUser(this.userName);
                 auth.setPwd(this.password);
+                auth.setAvatar(this.avatar);
+                this.$store.dispatch('SetAvatar', this.avatar);
             },
             clearCookies () {
                 auth.removeUser();
                 auth.removePwd();
                 auth.removeToken();
+                auth.removeAvatar();
+                this.$store.dispatch('SetAvatar', '');
             },
             handleSubmitClicked () {
                 let params = {
@@ -91,6 +96,7 @@
                 };
                 getAuthToken(params).then(response => {
                     this.token = response.data.token;
+                    this.avatar = response.data.avatar;
                     this.setCookies();
                     this.$router.push('/');
                 }).catch(err => {
@@ -98,11 +104,6 @@
                     this.message = err.message;
                     this.clearCookies();
                 });
-            },
-            handleClearClicked () {
-                this.$refs.form.reset();
-                this.alert = false;
-                this.message = '';
             }
         }
     };
