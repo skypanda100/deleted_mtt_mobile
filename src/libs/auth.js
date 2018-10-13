@@ -6,6 +6,7 @@ const TokenKey = 'MTT-Token';
 const UserKey = 'user';
 const PwdKey = 'password';
 const AvatarKey = 'avatar';
+const AliasKey = 'alias';
 
 auth.getToken = function () {
     return Cookies.get(TokenKey);
@@ -53,6 +54,18 @@ auth.setAvatar = function (avatar) {
 
 auth.removeAvatar = function () {
     return Cookies.remove(AvatarKey);
+};
+
+auth.getAlias = function () {
+    return Cookies.get(AliasKey);
+};
+
+auth.setAlias = function (alias) {
+    return Cookies.set(AliasKey, alias);
+};
+
+auth.removeAlias = function () {
+    return Cookies.remove(AliasKey);
 };
 
 export default auth;

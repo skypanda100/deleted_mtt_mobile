@@ -72,7 +72,7 @@
         },
         computed: {
             avatar () {
-                return this.$store.state.avatar;
+                return this.$store.state.userInfo.avatar;
             },
             route () {
                 return this.$store.state.route;

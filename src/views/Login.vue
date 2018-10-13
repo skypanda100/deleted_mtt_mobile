@@ -67,27 +67,33 @@
                 passwordRules: [
                     v => !!v || '请输入密码',
                     v => v.length >= 6 || '密码长度必须大于或等于6'
-                ],
-                token: null,
-                avatar: ''
+                ]
             };
         },
         mounted () {
         },
         methods: {
-            setCookies () {
-                auth.setToken(this.token);
+            setCookies (data) {
+                auth.setToken(data.token);
                 auth.setUser(this.userName);
                 auth.setPwd(this.password);
-                auth.setAvatar(this.avatar);
-                this.$store.dispatch('SetAvatar', this.avatar);
+                auth.setAvatar(data.avatar);
+                auth.setAlias(data.alias);
+                this.$store.dispatch('SetUserInfo', {
+                    avatar: data.avatar,
+                    alias: data.alias
+                });
             },
             clearCookies () {
                 auth.removeUser();
                 auth.removePwd();
                 auth.removeToken();
                 auth.removeAvatar();
-                this.$store.dispatch('SetAvatar', '');
+                auth.removeAlias();
+                this.$store.dispatch('SetUserInfo', {
+                    avatar: null,
+                    alias: null
+                });
             },
             handleSubmitClicked () {
                 let params = {
@@ -95,14 +101,12 @@
                     password: Base64.stringify(sha256(this.password))
                 };
                 getAuthToken(params).then(response => {
-                    this.token = response.data.token;
-                    this.avatar = response.data.avatar;
-                    this.setCookies();
+                    this.setCookies(response.data);
                     this.$router.push('/');
                 }).catch(err => {
+                    this.clearCookies();
                     this.alert = true;
                     this.message = err.message;
-                    this.clearCookies();
                 });
             }
         }

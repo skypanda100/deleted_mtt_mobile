@@ -9,7 +9,10 @@ const state = {
         path: '',
         name: ''
     },
-    avatar: auth.getAvatar()
+    userInfo: {
+        avatar: auth.getAvatar(),
+        alias: auth.getAlias()
+    }
 };
 export default new Vuex.Store({
     state,
@@ -17,8 +20,11 @@ export default new Vuex.Store({
         SWITCH_ROUTE (state, route) {
             state.route = route;
         },
-        SET_AVATAR (state, avatar) {
-            state.avatar = avatar;
+        SET_USER_INFO (state, userInfo) {
+            state.userInfo = {
+                avatar: userInfo.avatar,
+                alias: userInfo.alias
+            };
         }
     },
     actions: {
@@ -28,9 +34,9 @@ export default new Vuex.Store({
                 resolve();
             });
         },
-        SetAvatar ({commit}, data) {
+        SetUserInfo ({commit}, data) {
             return new Promise(resolve => {
-                commit('SET_AVATAR', data);
+                commit('SET_USER_INFO', data);
                 resolve();
             });
         }
