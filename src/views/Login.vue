@@ -52,27 +52,42 @@
                 password: util.isNull(auth.getPwd()) ? '' : auth.getPwd(),
                 passwordRules: [
                     v => v.length >= 6 || 'Password must be greater than 6 characters'
-                ]
+                ],
+                token: null
             };
         },
         mounted () {
         },
         methods: {
+            setCookies () {
+                auth.setToken(this.token);
+                auth.setUser(this.userName);
+                auth.setPwd(this.password);
+            },
+            clearCookies () {
+                auth.removeUser();
+                auth.removePwd();
+                auth.removeToken();
+            },
             handleSubmitClicked () {
                 let params = {
                     username: this.userName,
                     password: Base64.stringify(sha256(this.password))
                 };
-                getAuthToken(params).then(data => {
-                    console.log(1, data);
+                getAuthToken(params).then(response => {
+                    this.token = response.data.token;
+                    this.setCookies();
+                    this.$router.push('/');
                 }).catch(err => {
-                    console.log(2, err);
                     this.alert = true;
                     this.message = err.message;
+                    this.clearCookies();
                 });
             },
             handleClearClicked () {
                 this.$refs.form.reset();
+                this.alert = false;
+                this.message = '';
             }
         }
     };

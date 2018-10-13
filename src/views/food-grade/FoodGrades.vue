@@ -55,7 +55,6 @@
          * 再次进入缓存的页面，只会触发beforeRouteEnter -->activated --> deactivated 。created和mounted不会再执行。
          */
         beforeRouteEnter (to, from, next) {
-            console.log(from.name, to.name);
             if (from.name === 'FoodGrade') {
                 if (to.name === 'FoodGrades') {
                     to.meta.isBack = true;
