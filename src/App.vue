@@ -41,7 +41,7 @@
                 <v-icon>camera</v-icon>
             </v-btn>
             <v-btn icon @click.native="handleUploadClicked" v-if="showUpload">
-                <v-icon>save</v-icon>
+                <v-icon>cloud_upload</v-icon>
             </v-btn>
         </v-toolbar>
         <v-content>

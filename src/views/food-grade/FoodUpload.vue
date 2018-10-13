@@ -20,11 +20,12 @@
             <v-card>
                 <croppa
                     style="width: 100%;height: 100vmin"
-                    placeholder=""
                     :show-loading="true"
                     :auto-sizing="true"
                     @file-choose="handleImageChoose"
                     @image-remove="handleImageRemove"
+                    placeholder="点击这里选择一张图片 :)"
+                    :prevent-white-space="true"
                     v-model="myCroppa">
                 </croppa>
                 <v-card-title>
