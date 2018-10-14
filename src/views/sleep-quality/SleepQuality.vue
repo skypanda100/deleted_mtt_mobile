@@ -19,11 +19,15 @@
             <v-card>
                 <canvas id="sleepLineCanvas" class="sleepContainer"></canvas>
             </v-card>
-            <br>
         </v-flex>
         <v-flex xs12 sm6 offset-sm3>
             <v-card>
                 <canvas id="sleepPieCanvas" class="sleepContainer"></canvas>
+            </v-card>
+        </v-flex>
+        <v-flex xs12 sm6 offset-sm3>
+            <v-card>
+                <canvas id="sleepRadarCanvas" class="sleepContainer"></canvas>
             </v-card>
             <br>
         </v-flex>
@@ -34,6 +38,7 @@
     import auth from '@/libs/auth';
     import { fetchSleepQualities } from '@/api/sleep-quality';
     import F2 from '@antv/f2';
+    import util from '@/libs/util';
 
     const SleepColor = '#7B68EE';
     const DeepSleepColor = '#483D8B';
@@ -59,6 +64,7 @@
                         value: 365
                     }
                 ],
+                sleepCount: 0,
                 sleepLineDef: {
                     date: {
                         type: 'timeCat',
@@ -78,6 +84,8 @@
                     {avg: 0.0, ratio: 0.0, name: '总睡', a: '1'},
                     {avg: 0.0, ratio: 0.0, name: '深睡', a: '1'},
                     {avg: 0.0, ratio: 0.0, name: '清醒', a: '1'}
+                ],
+                sleepRadarData: [
                 ]
             };
         },
@@ -105,6 +113,14 @@
             this.fetchData();
         },
         methods: {
+            clearRadarData () {
+                this.sleepRadarData = [];
+                for (let i = 23; i < 24 + 9; i++) {
+                    this.sleepRadarData.push({
+                        item: i % 24 + '', count: 0
+                    });
+                }
+            },
             formatTime (val) {
                 let label = '';
                 let hours = Math.floor(val / 60);
@@ -124,11 +140,13 @@
                 };
                 fetchSleepQualities(params).then(response => {
                     let data = response.data;
-
+                    this.sleepCount = data.length;
                     this.makeLineData(data);
                     this.makePieData(data);
+                    this.makeRadarData(data);
                     this.makeLineChart();
                     this.makePieChart();
+                    this.makeRadarChart();
                 });
             },
             makeLineData (data) {
@@ -169,6 +187,38 @@
                 this.sleepPieData[0].ratio = avgSumSleep / (avgSumSleep + avgDeepSleep + avgAwake);
                 this.sleepPieData[1].ratio = avgDeepSleep / (avgSumSleep + avgDeepSleep + avgAwake);
                 this.sleepPieData[2].ratio = avgAwake / (avgSumSleep + avgDeepSleep + avgAwake);
+            },
+            makeRadarData (data) {
+                this.clearRadarData();
+                data.map(d => {
+                    let deepSleeps = d.deepSleeps;
+                    deepSleeps.map(deepSleep => {
+                        let start = deepSleep.start;
+                        let end = deepSleep.end;
+                        let startTime = util.parseDate(start, 'yyyy-MM-dd hh:mm').getTime();
+                        let endTime = util.parseDate(end, 'yyyy-MM-dd hh:mm').getTime();
+                        let startHour = parseInt(util.formatDate(new Date(startTime), 'hh'));
+                        let endHour = parseInt(util.formatDate(new Date(endTime), 'hh'));
+                        if (startHour === endHour) {
+                            for (let sleepData of this.sleepRadarData) {
+                                if (parseInt(sleepData.item) === startHour) {
+                                    sleepData.count++;
+                                    break;
+                                }
+                            }
+                        } else {
+                            do {
+                                for (let sleepData of this.sleepRadarData) {
+                                    if (parseInt(sleepData.item) === startHour) {
+                                        sleepData.count++;
+                                        break;
+                                    }
+                                }
+                                startHour = (startHour + 1) % 24;
+                            } while (startHour <= endHour);
+                        }
+                    });
+                });
             },
             makeLineChart () {
                 let sleepLineChart = new F2.Chart({
@@ -217,6 +267,27 @@
                 sleepPieChart.axis(false);
                 sleepPieChart.interval().position('a*ratio').color('name', [SleepColor, DeepSleepColor, AwakeColor]).adjust('stack');
                 sleepPieChart.render();
+            },
+            makeRadarChart () {
+                let sleepRadarchart = new F2.Chart({
+                    id: 'sleepRadarCanvas',
+                    pixelRatio: window.devicePixelRatio
+                });
+                sleepRadarchart.coord('polar');
+                sleepRadarchart.source(this.sleepRadarData);
+                sleepRadarchart.axis('item', {
+                    grid: {
+                        lineDash: null
+                    }
+                });
+                sleepRadarchart.area().position('item*count').style({
+                    fill: DeepSleepColor,
+                    fillOpacity: 0.6
+                });
+                sleepRadarchart.line().position('item*count').style({
+                    stroke: DeepSleepColor
+                });
+                sleepRadarchart.render();
             }
         }
     };
