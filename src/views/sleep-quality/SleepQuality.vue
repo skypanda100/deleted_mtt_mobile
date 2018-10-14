@@ -18,6 +18,14 @@
         <v-flex xs12 sm6 offset-sm3>
             <v-card>
                 <v-card-title primary-title>
+                    <h3>入睡睡醒时间趋势</h3>
+                </v-card-title>
+                <canvas id="sleepAreaCanvas" class="sleepContainer"></canvas>
+            </v-card>
+        </v-flex>
+        <v-flex xs12 sm6 offset-sm3>
+            <v-card>
+                <v-card-title primary-title>
                     <h3>睡眠时长趋势</h3>
                 </v-card-title>
                 <canvas id="sleepLineCanvas" class="sleepContainer"></canvas>
@@ -39,14 +47,6 @@
                 <canvas id="sleepRadarCanvas" class="sleepContainer"></canvas>
             </v-card>
             <br>
-        </v-flex>
-        <v-flex xs12 sm6 offset-sm3>
-            <v-card>
-                <v-card-title primary-title>
-                    <h3>入睡睡醒时间趋势</h3>
-                </v-card-title>
-                <canvas id="sleepAreaCanvas" class="sleepContainer"></canvas>
-            </v-card>
         </v-flex>
     </v-layout>
 </template>
@@ -90,9 +90,8 @@
                         range: [0, 1]
                     },
                     value: {
-                        tickCount: 2,
                         formatter: (val) => {
-                            return util.formatDate(new Date(val), 'hh:mm');
+                            return util.formatDate(new Date(val * 1000), 'hh:mm');
                         }
                     }
                 },
@@ -105,7 +104,6 @@
                         range: [0, 1]
                     },
                     value: {
-                        tickCount: 5,
                         formatter: (val) => {
                             return val;
                         }
@@ -206,12 +204,12 @@
                     }
                     this.sleepAreaData.push({
                         date: d.date,
-                        value: startTime,
+                        value: Math.floor(startTime / 1000),
                         type: '入睡'
                     });
                     this.sleepAreaData.push({
                         date: d.date,
-                        value: endTime,
+                        value: Math.floor(endTime / 1000),
                         type: '睡醒'
                     });
                 });
