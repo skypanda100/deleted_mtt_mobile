@@ -72,7 +72,7 @@
         },
         computed: {
             avatar () {
-                return this.$store.state.userInfo.avatar;
+                return this.$store.state.userInfo.avatar + '?timestamp=' + new Date().getTime();
             },
             route () {
                 return this.$store.state.route;

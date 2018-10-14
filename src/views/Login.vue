@@ -48,7 +48,7 @@
 <script>
     import util from '../libs/util';
     import auth from '../libs/auth';
-    import { getAuthToken } from '../api/auth';
+    import { fetchAuthToken } from '../api/auth';
     import sha256 from 'crypto-js/sha256';
     import Base64 from 'crypto-js/enc-base64';
 
@@ -100,7 +100,7 @@
                     username: this.userName,
                     password: Base64.stringify(sha256(this.password))
                 };
-                getAuthToken(params).then(response => {
+                fetchAuthToken(params).then(response => {
                     this.setCookies(response.data);
                     this.$router.push('/');
                 }).catch(err => {

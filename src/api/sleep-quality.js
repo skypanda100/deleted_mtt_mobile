@@ -1,9 +1,9 @@
 import {service} from '@/libs/request';
 
-export function fetchAuthToken (params) {
+export function saveSleepQuality (params) {
     return service({
         method: 'post',
-        url: 'users/token',
+        url: 'sleepQualities',
         data: params
     });
 }

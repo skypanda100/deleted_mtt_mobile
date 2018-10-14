@@ -93,8 +93,11 @@
                 ></v-time-picker>
             </v-menu>
         </v-flex>
-        <v-flex xs12 sm6 v-if="deepSleepTimes.length > 0">
+        <v-flex xs10 sm6 v-if="deepSleepTimes.length > 0">
             <h4>深睡</h4>
+        </v-flex>
+        <v-flex xs2 sm6 v-if="deepSleepTimes.length > 0">
+            <p class="text-lg-right">{{Math.floor(sumDeepSleep / 60)}}时{{Math.floor(sumDeepSleep % 60)}}分</p>
         </v-flex>
         <v-layout row wrap v-for="(deepSleep, index) in deepSleepTimes" :key="'deepSleep' + index">
             <v-flex xs6 sm6>
@@ -116,8 +119,11 @@
                 ></v-text-field>
             </v-flex>
         </v-layout>
-        <v-flex xs12 sm6 v-if="awakeTimes.length > 0">
+        <v-flex xs10 sm6 v-if="awakeTimes.length > 0">
             <h4>清醒</h4>
+        </v-flex>
+        <v-flex xs2 sm6 v-if="awakeTimes.length > 0">
+            <p class="text-lg-right">{{Math.floor(sumAwake / 60)}}时{{Math.floor(sumAwake % 60)}}分</p>
         </v-flex>
         <v-layout row wrap v-for="(awake, index) in awakeTimes" :key="'awake' + index">
             <v-flex xs6 sm6>
@@ -145,13 +151,22 @@
         <v-flex xs6 sm6>
             <v-btn @click="handleSaveClicked" block color="primary" :disabled="!canTransform">保存</v-btn>
         </v-flex>
+        <v-flex xs12 sm6>
+            <v-alert
+                :value="alert.show"
+                :type="alert.type"
+                transition="scale-transition">
+                {{alert.message}}
+            </v-alert>
+        </v-flex>
     </v-layout>
 </template>
 
 <script>
     import util from '@/libs/util';
-    // import auth from '@/libs/auth';
+    import auth from '@/libs/auth';
     import UPNG from 'upng-js';
+    import { saveSleepQuality } from '@/api/sleep-quality';
 
     const deepSleepRGBA = [96, 80, 176, 255];
     const awakeRGBA = [255, 156, 44, 255];
@@ -170,7 +185,14 @@
                 endTimeMenu: false,
                 endTime: null,
                 deepSleepTimes: [],
-                awakeTimes: []
+                sumDeepSleep: 0,
+                awakeTimes: [],
+                sumAwake: 0,
+                alert: {
+                    show: false,
+                    type: 'error',
+                    message: ''
+                }
             };
         },
         computed: {
@@ -179,6 +201,31 @@
                     !util.isNull(this.sleepDate) &&
                     !util.isNull(this.startTime) &&
                     !util.isNull(this.endTime);
+            }
+        },
+        watch: {
+            'sleepDate': function (data) {
+                this.clearTransformZone();
+            },
+            'startTime': function (data) {
+                this.clearTransformZone();
+            },
+            'endTime': function (data) {
+                this.clearTransformZone();
+            },
+            'deepSleepTimes': function (data) {
+                let sum = 0;
+                data.map(d => {
+                    sum += d.diff;
+                });
+                this.sumDeepSleep = sum;
+            },
+            'awakeTimes': function (data) {
+                let sum = 0;
+                data.map(d => {
+                    sum += d.diff;
+                });
+                this.sumAwake = sum;
             }
         },
         methods: {
@@ -195,11 +242,23 @@
                 let date = this.sleepDate + ' ' + this.endTime;
                 return date;
             },
+            getSumSleep () {
+                let startTime = util.parseDate(this.getSleepStartTime(), 'yyyy-MM-dd hh:mm');
+                let endTime = util.parseDate(this.getSleepEndTime(), 'yyyy-MM-dd hh:mm');
+                let offsetTime = endTime.getTime() - startTime.getTime();
+                return Math.floor(offsetTime / 1000 / 60) - this.sumAwake;
+            },
+            clearTransformZone () {
+                this.deepSleepTimes = [];
+                this.sumDeepSleep = 0;
+                this.awakeTimes = [];
+                this.sumAwake = 0;
+                this.alert.show = false;
+            },
             transformTime (arr, sumLen) {
                 let sleepTimes = [];
                 let startTime = util.parseDate(this.getSleepStartTime(), 'yyyy-MM-dd hh:mm');
                 let endTime = util.parseDate(this.getSleepEndTime(), 'yyyy-MM-dd hh:mm');
-                console.log(startTime, endTime);
                 let offsetTime = endTime.getTime() - startTime.getTime();
                 arr.map(data => {
                     let subStartTime = new Date(startTime.getTime() + data.start / sumLen * offsetTime);
@@ -208,7 +267,8 @@
                     let subEndTimeStr = util.formatDate(subEndTime, 'yyyy-MM-dd hh:mm');
                     sleepTimes.push({
                         start: subStartTimeStr,
-                        end: subEndTimeStr
+                        end: subEndTimeStr,
+                        diff: Math.floor((subEndTime.getTime() - subStartTime.getTime()) / 1000 / 60) + 1
                     });
                 });
                 return sleepTimes;
@@ -311,8 +371,7 @@
             },
             handleImageRemove () {
                 this.image = null;
-                this.deepSleepTimes = [];
-                this.awakeTimes = [];
+                this.clearTransformZone();
             },
             handleTransformClicked () {
                 let reader = new FileReader();
@@ -323,7 +382,31 @@
                 reader.readAsArrayBuffer(this.image);
             },
             handleSaveClicked () {
-
+                let params = {
+                    user: auth.getUser(),
+                    date: this.sleepDate,
+                    sleepStart: this.getSleepStartTime(),
+                    sleepEnd: this.getSleepEndTime(),
+                    sumSleep: this.getSumSleep(),
+                    deepSleeps: this.deepSleepTimes,
+                    sumDeepSleep: this.sumDeepSleep,
+                    awakes: this.awakeTimes,
+                    sumAwake: this.sumAwake
+                };
+                console.log(params);
+                saveSleepQuality(params).then(response => {
+                    let data = response.data;
+                    console.log(data);
+                    if (data.status === 200) {
+                        this.alert.show = true;
+                        this.alert.type = 'success';
+                        this.alert.message = data.message;
+                    } else {
+                        this.alert.show = true;
+                        this.alert.type = 'error';
+                        this.alert.message = data.message;
+                    }
+                });
             }
         }
     };
