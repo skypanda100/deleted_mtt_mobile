@@ -279,13 +279,21 @@
                 });
             },
             makeAreaChart () {
-                let sleepLineChart = new F2.Chart({
+                let sleepAreaChart = new F2.Chart({
                     id: 'sleepAreaCanvas',
                     pixelRatio: window.devicePixelRatio
                 });
-                sleepLineChart.source(this.sleepAreaData, this.sleepAreaDef);
-                sleepLineChart.line().position('date*value').shape('smooth').color('type', [SleepColor, AwakeColor]);
-                sleepLineChart.render();
+                sleepAreaChart.source(this.sleepAreaData, this.sleepAreaDef);
+                sleepAreaChart.tooltip({
+                    showItemMarker: false,
+                    onShow: function onShow (ev) {
+                        let items = ev.items;
+                        items[0].name = items[0].title + '  ' + items[0].name;
+                    },
+                    showCrosshairs: true
+                });
+                sleepAreaChart.line().position('date*value').shape('smooth').color('type', [SleepColor, AwakeColor]);
+                sleepAreaChart.render();
             },
             makeLineChart () {
                 let sleepLineChart = new F2.Chart({
@@ -293,6 +301,14 @@
                     pixelRatio: window.devicePixelRatio
                 });
                 sleepLineChart.source(this.sleepLineData, this.sleepLineDef);
+                sleepLineChart.tooltip({
+                    showItemMarker: false,
+                    onShow: function onShow (ev) {
+                        let items = ev.items;
+                        items[0].name = items[0].title + '  ' + items[0].name;
+                    },
+                    showCrosshairs: true
+                });
                 sleepLineChart.line().position('date*value').shape('smooth').color('type', [SleepColor, DeepSleepColor, AwakeColor]);
                 sleepLineChart.render();
             },
