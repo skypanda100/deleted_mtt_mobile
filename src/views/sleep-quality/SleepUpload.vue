@@ -30,7 +30,12 @@
                     prepend-icon="event"
                     readonly
                 ></v-text-field>
-                <v-date-picker v-model="sleepDate" @input="$refs.sleepDateMenu.save(sleepDate)"></v-date-picker>
+                <v-date-picker
+                    v-model="sleepDate"
+                    @input="$refs.sleepDateMenu.save(sleepDate)"
+                    :event-color="'red'"
+                    :events="functionUndoEvents"
+                ></v-date-picker>
             </v-menu>
         </v-flex>
         <v-flex xs6 sm6>
@@ -166,7 +171,7 @@
     import util from '@/libs/util';
     import auth from '@/libs/auth';
     import UPNG from 'upng-js';
-    import { saveSleepQuality } from '@/api/sleep-quality';
+    import { saveSleepQuality, fetchUndoSleepQualities } from '@/api/sleep-quality';
 
     const deepSleepRGBA = [96, 80, 176, 255];
     const awakeRGBA = [255, 156, 44, 255];
@@ -177,6 +182,7 @@
         name: 'SleepUpload',
         data () {
             return {
+                undoTimes: [],
                 image: null,
                 sleepDateMenu: false,
                 sleepDate: util.formatDate(new Date(), 'yyyy-MM-dd'),
@@ -228,7 +234,21 @@
                 this.sumAwake = sum;
             }
         },
+        mounted () {
+            this.getUndoTimes();
+        },
         methods: {
+            getUndoTimes () {
+                let params = {
+                    user: auth.getUser()
+                };
+                fetchUndoSleepQualities(params).then(response => {
+                    this.undoTimes = response.data;
+                });
+            },
+            functionUndoEvents (date) {
+                return this.undoTimes.indexOf(date) > -1;
+            },
             getSleepStartTime () {
                 let date = this.sleepDate;
                 if (this.startTime > this.endTime) {
@@ -401,6 +421,7 @@
                         this.alert.show = true;
                         this.alert.type = 'success';
                         this.alert.message = data.message;
+                        this.getUndoTimes();
                     } else {
                         this.alert.show = true;
                         this.alert.type = 'error';

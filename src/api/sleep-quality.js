@@ -7,3 +7,11 @@ export function saveSleepQuality (params) {
         data: params
     });
 }
+
+export function fetchUndoSleepQualities (params) {
+    return service({
+        method: 'get',
+        url: 'sleepQualities/undo',
+        params: params
+    });
+}
