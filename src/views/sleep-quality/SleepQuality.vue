@@ -1,10 +1,20 @@
 <template>
     <v-layout row wrap>
-        <v-select
-            :items="days"
-            label="显示期间"
-            v-model="day"
-        ></v-select>
+        <v-flex xs5>
+            <v-select
+                :items="users"
+                label="用户"
+                v-model="user"
+            ></v-select>
+        </v-flex>
+        <v-spacer></v-spacer>
+        <v-flex xs5>
+            <v-select
+                :items="days"
+                label="显示期间"
+                v-model="day"
+            ></v-select>
+        </v-flex>
         <v-flex xs12 sm6 offset-sm3>
             <v-card>
                 <canvas id="sleepLineCanvas" class="sleepContainer"></canvas>
@@ -25,10 +35,15 @@
     import { fetchSleepQualities } from '@/api/sleep-quality';
     import F2 from '@antv/f2';
 
+    const SleepColor = '#7B68EE';
+    const DeepSleepColor = '#483D8B';
+    const AwakeColor = '#FFA500';
+
     export default {
         name: 'SleepQuality',
         data () {
             return {
+                user: auth.getUser(),
                 day: 7,
                 days: [
                     {
@@ -54,21 +69,36 @@
                     value: {
                         tickCount: 5,
                         formatter: (val) => {
-                            return this.formatTime(val);
+                            return val;
                         }
                     }
                 },
                 sleepLineData: [{ date: '', value: 0, type: '总睡眠' }],
                 sleepPieData: [
-                    {num: 0.0, ratio: 0.0, name: '浅睡', a: '1'},
-                    {num: 0.0, ratio: 0.0, name: '深睡', a: '1'},
-                    {num: 0.0, ratio: 0.0, name: '清醒', a: '1'}
+                    {avg: 0.0, ratio: 0.0, name: '总睡', a: '1'},
+                    {avg: 0.0, ratio: 0.0, name: '深睡', a: '1'},
+                    {avg: 0.0, ratio: 0.0, name: '清醒', a: '1'}
                 ]
             };
         },
         watch: {
+            'user': function (data) {
+                this.fetchData();
+            },
             'day': function (data) {
                 this.fetchData();
+            }
+        },
+        computed: {
+            users () {
+                let list = [];
+                this.$store.state.allUserInfo.map(userInfo => {
+                    list.push({
+                        text: userInfo.alias,
+                        value: userInfo.username
+                    });
+                });
+                return list;
             }
         },
         mounted () {
@@ -89,61 +119,73 @@
             },
             fetchData () {
                 let params = {
-                    user: auth.getUser(),
+                    user: this.user,
                     days: this.day
                 };
-                this.sleepLineData = [];
-                this.sleepPieData[0].num = 0;
-                this.sleepPieData[1].num = 0;
-                this.sleepPieData[2].num = 0;
                 fetchSleepQualities(params).then(response => {
                     let data = response.data;
-                    data.map(d => {
-                        this.sleepLineData.push({
-                            date: d.date,
-                            value: d.sumSleep,
-                            type: '总睡眠'
-                        });
-                        this.sleepLineData.push({
-                            date: d.date,
-                            value: d.sumDeepSleep,
-                            type: '深睡'
-                        });
-                        this.sleepLineData.push({
-                            date: d.date,
-                            value: d.sumAwake,
-                            type: '清醒'
-                        });
-                        this.sleepPieData[0].num += d.sumSleep - d.sumDeepSleep;
-                        this.sleepPieData[1].num += d.sumDeepSleep;
-                        this.sleepPieData[2].num += d.sumAwake;
-                    });
-                    let sumShallowSleep = this.sleepPieData[0].num;
-                    let sumDeepSleep = this.sleepPieData[1].num;
-                    let sumAwake = this.sleepPieData[2].num;
-                    this.sleepPieData[0].ratio = sumShallowSleep / (sumShallowSleep + sumDeepSleep + sumAwake);
-                    this.sleepPieData[1].ratio = sumDeepSleep / (sumShallowSleep + sumDeepSleep + sumAwake);
-                    this.sleepPieData[2].ratio = sumAwake / (sumShallowSleep + sumDeepSleep + sumAwake);
 
-                    this.makeCharts();
+                    this.makeLineData(data);
+                    this.makePieData(data);
+                    this.makeLineChart();
+                    this.makePieChart();
                 });
             },
-            makeCharts () {
-                // line
+            makeLineData (data) {
+                this.sleepLineData = [];
+                data.map(d => {
+                    this.sleepLineData.push({
+                        date: d.date,
+                        value: d.sumSleep,
+                        type: '总睡眠'
+                    });
+                    this.sleepLineData.push({
+                        date: d.date,
+                        value: d.sumDeepSleep,
+                        type: '深睡'
+                    });
+                    this.sleepLineData.push({
+                        date: d.date,
+                        value: d.sumAwake,
+                        type: '清醒'
+                    });
+                });
+            },
+            makePieData (data) {
+                let sumSleep = 0;
+                let sumDeepSleep = 0;
+                let sumAwake = 0;
+                data.map(d => {
+                    sumSleep += d.sumSleep;
+                    sumDeepSleep += d.sumDeepSleep;
+                    sumAwake += d.sumAwake;
+                });
+                let avgSumSleep = Math.floor(sumSleep / data.length);
+                let avgDeepSleep = Math.floor(sumDeepSleep / data.length);
+                let avgAwake = Math.floor(sumAwake / data.length);
+                this.sleepPieData[0].avg = avgSumSleep;
+                this.sleepPieData[1].avg = avgDeepSleep;
+                this.sleepPieData[2].avg = avgAwake;
+                this.sleepPieData[0].ratio = avgSumSleep / (avgSumSleep + avgDeepSleep + avgAwake);
+                this.sleepPieData[1].ratio = avgDeepSleep / (avgSumSleep + avgDeepSleep + avgAwake);
+                this.sleepPieData[2].ratio = avgAwake / (avgSumSleep + avgDeepSleep + avgAwake);
+            },
+            makeLineChart () {
                 let sleepLineChart = new F2.Chart({
                     id: 'sleepLineCanvas',
                     pixelRatio: window.devicePixelRatio
                 });
                 sleepLineChart.source(this.sleepLineData, this.sleepLineDef);
-                sleepLineChart.line().position('date*value').shape('smooth').color('type', ['#4169E1', '#483D8B', '#FFA500']);
+                sleepLineChart.line().position('date*value').shape('smooth').color('type', [SleepColor, DeepSleepColor, AwakeColor]);
                 sleepLineChart.render();
-                // pie
+            },
+            makePieChart () {
                 let sleepPieChart = new F2.Chart({
                     id: 'sleepPieCanvas',
                     pixelRatio: window.devicePixelRatio
                 });
                 sleepPieChart.source(this.sleepPieData, {
-                    num: {
+                    avg: {
                         formatter: (val) => {
                             return this.formatTime(val);
                         }
@@ -157,14 +199,14 @@
                 sleepPieChart.legend({
                     position: 'right',
                     itemFormatter: (val) => {
-                        let num = 0;
+                        let avg = 0;
                         for (let sleepData of this.sleepPieData) {
                             if (sleepData.name === val) {
-                                num = sleepData.num;
+                                avg = sleepData.avg;
                                 break;
                             }
                         }
-                        return val + ' ' + this.formatTime(num);
+                        return val + ' ' + this.formatTime(avg);
                     }
                 });
                 sleepPieChart.tooltip(false);
@@ -173,7 +215,7 @@
                     radius: 0.85
                 });
                 sleepPieChart.axis(false);
-                sleepPieChart.interval().position('a*ratio').color('name', ['#7B68EE', '#483D8B', '#FFA500']).adjust('stack');
+                sleepPieChart.interval().position('a*ratio').color('name', [SleepColor, DeepSleepColor, AwakeColor]).adjust('stack');
                 sleepPieChart.render();
             }
         }
