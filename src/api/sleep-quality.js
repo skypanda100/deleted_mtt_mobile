@@ -15,3 +15,11 @@ export function fetchUndoSleepQualities (params) {
         params: params
     });
 }
+
+export function fetchSleepQualities (params) {
+    return service({
+        method: 'get',
+        url: 'sleepQualities/last',
+        params: params
+    });
+}
