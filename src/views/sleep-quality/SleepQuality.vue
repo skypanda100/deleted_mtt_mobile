@@ -17,19 +17,36 @@
         </v-flex>
         <v-flex xs12 sm6 offset-sm3>
             <v-card>
+                <v-card-title primary-title>
+                    <h3>睡眠时长趋势</h3>
+                </v-card-title>
                 <canvas id="sleepLineCanvas" class="sleepContainer"></canvas>
             </v-card>
         </v-flex>
         <v-flex xs12 sm6 offset-sm3>
             <v-card>
+                <v-card-title primary-title>
+                    <h3>平均睡眠时长</h3>
+                </v-card-title>
                 <canvas id="sleepPieCanvas" class="sleepContainer"></canvas>
             </v-card>
         </v-flex>
         <v-flex xs12 sm6 offset-sm3>
             <v-card>
+                <v-card-title primary-title>
+                    <h3>深睡时间分布</h3>
+                </v-card-title>
                 <canvas id="sleepRadarCanvas" class="sleepContainer"></canvas>
             </v-card>
             <br>
+        </v-flex>
+        <v-flex xs12 sm6 offset-sm3>
+            <v-card>
+                <v-card-title primary-title>
+                    <h3>入睡睡醒时间趋势</h3>
+                </v-card-title>
+                <canvas id="sleepAreaCanvas" class="sleepContainer"></canvas>
+            </v-card>
         </v-flex>
     </v-layout>
 </template>
@@ -65,6 +82,21 @@
                     }
                 ],
                 sleepCount: 0,
+                sleepAreaDef: {
+                    date: {
+                        type: 'timeCat',
+                        mask: 'MM-DD',
+                        tickCount: 7,
+                        range: [0, 1]
+                    },
+                    value: {
+                        tickCount: 2,
+                        formatter: (val) => {
+                            return util.formatDate(new Date(val), 'hh:mm');
+                        }
+                    }
+                },
+                sleepAreaData: [{ date: '', value: 0, type: '入睡' }],
                 sleepLineDef: {
                     date: {
                         type: 'timeCat',
@@ -141,12 +173,47 @@
                 fetchSleepQualities(params).then(response => {
                     let data = response.data;
                     this.sleepCount = data.length;
+                    this.makeAreaData(data);
                     this.makeLineData(data);
                     this.makePieData(data);
                     this.makeRadarData(data);
+                    this.makeAreaChart();
                     this.makeLineChart();
                     this.makePieChart();
                     this.makeRadarChart();
+                });
+            },
+            makeAreaData (data) {
+                this.sleepAreaData = [];
+                data.map(d => {
+                    let start = util.parseDate(d.sleepStart, 'yyyy-MM-dd hh:mm');
+                    let end = util.parseDate(d.sleepEnd, 'yyyy-MM-dd hh:mm');
+
+                    let startDay = parseInt(util.formatDate(start, 'dd'), 10);
+                    let endDay = parseInt(util.formatDate(end, 'dd'), 10);
+
+                    let curStandardYmd = '2018-10-14';
+                    let nxtStandardYmd = '2018-10-15';
+                    let startTime = 0;
+                    let endTime = 0;
+
+                    if (startDay === endDay) {
+                        startTime = util.parseDate(nxtStandardYmd + ' ' + d.sleepStart.substr(11), 'yyyy-MM-dd hh:mm').getTime();
+                        endTime = util.parseDate(nxtStandardYmd + ' ' + d.sleepEnd.substr(11), 'yyyy-MM-dd hh:mm').getTime();
+                    } else {
+                        startTime = util.parseDate(curStandardYmd + ' ' + d.sleepStart.substr(11), 'yyyy-MM-dd hh:mm').getTime();
+                        endTime = util.parseDate(nxtStandardYmd + ' ' + d.sleepEnd.substr(11), 'yyyy-MM-dd hh:mm').getTime();
+                    }
+                    this.sleepAreaData.push({
+                        date: d.date,
+                        value: startTime,
+                        type: '入睡'
+                    });
+                    this.sleepAreaData.push({
+                        date: d.date,
+                        value: endTime,
+                        type: '睡醒'
+                    });
                 });
             },
             makeLineData (data) {
@@ -199,26 +266,28 @@
                         let endTime = util.parseDate(end, 'yyyy-MM-dd hh:mm').getTime();
                         let startHour = parseInt(util.formatDate(new Date(startTime), 'hh'));
                         let endHour = parseInt(util.formatDate(new Date(endTime), 'hh'));
-                        if (startHour === endHour) {
+                        let diffHour = endHour - startHour;
+                        diffHour = diffHour < 0 ? diffHour + 24 : diffHour;
+                        for (let i = 0; i <= diffHour; i++) {
+                            let dspStartHour = (startHour + i) % 24;
                             for (let sleepData of this.sleepRadarData) {
-                                if (parseInt(sleepData.item) === startHour) {
+                                if (parseInt(sleepData.item) === dspStartHour) {
                                     sleepData.count++;
                                     break;
                                 }
                             }
-                        } else {
-                            do {
-                                for (let sleepData of this.sleepRadarData) {
-                                    if (parseInt(sleepData.item) === startHour) {
-                                        sleepData.count++;
-                                        break;
-                                    }
-                                }
-                                startHour = (startHour + 1) % 24;
-                            } while (startHour <= endHour);
                         }
                     });
                 });
+            },
+            makeAreaChart () {
+                let sleepLineChart = new F2.Chart({
+                    id: 'sleepAreaCanvas',
+                    pixelRatio: window.devicePixelRatio
+                });
+                sleepLineChart.source(this.sleepAreaData, this.sleepAreaDef);
+                sleepLineChart.line().position('date*value').shape('smooth').color('type', [SleepColor, AwakeColor]);
+                sleepLineChart.render();
             },
             makeLineChart () {
                 let sleepLineChart = new F2.Chart({
@@ -247,7 +316,7 @@
                     radius: 0.8
                 });
                 sleepPieChart.legend({
-                    position: 'right',
+                    position: 'top',
                     itemFormatter: (val) => {
                         let avg = 0;
                         for (let sleepData of this.sleepPieData) {
@@ -274,7 +343,12 @@
                     pixelRatio: window.devicePixelRatio
                 });
                 sleepRadarchart.coord('polar');
-                sleepRadarchart.source(this.sleepRadarData);
+                sleepRadarchart.source(this.sleepRadarData, {
+                    count: {
+                        nice: false,
+                        tickCount: 4
+                    }
+                });
                 sleepRadarchart.axis('item', {
                     grid: {
                         lineDash: null
