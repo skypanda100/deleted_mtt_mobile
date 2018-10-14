@@ -49,6 +49,7 @@
 <script>
     import util from '@/libs/util';
     import { saveFoodGrade } from '@/api/food-grade';
+    import auth from '@/libs/auth';
 
     export default {
         name: 'food-upload',
@@ -79,7 +80,7 @@
             handleFinishClicked () {
                 this.myCroppa.generateBlob(blob => {
                     let params = new FormData();
-                    params.append('user', '');
+                    params.append('user', auth.getUser());
                     params.append('dateTime', this.dateTime);
                     params.append('grade', this.grade);
                     params.append('comment', this.comment);

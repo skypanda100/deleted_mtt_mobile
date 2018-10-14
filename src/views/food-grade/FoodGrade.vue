@@ -17,11 +17,20 @@
                     </v-layout>
                 </v-img>
                 <v-card-title>
-                    <div class="text-xs-left">
-                        <div>Posted on {{dateTime}}</div>
-                        <v-rating v-model="gradeNumber" dense readonly color="#f00"></v-rating>
+                    <v-flex xs3>
+                        <v-avatar>
+                            <img :src="imageHost + '/' + getAvatar(user)">
+                        </v-avatar>
+                    </v-flex>
+                    <v-flex xs9>
+                        <div class="text-xs-right">
+                            <div>{{dateTime}}</div>
+                            <v-rating v-model="gradeNumber" dense readonly color="#f00"></v-rating>
+                        </div>
+                    </v-flex>
+                    <v-flex xs12>
                         <div>{{comment}}</div>
-                    </div>
+                    </v-flex>
                 </v-card-title>
             </v-card>
         </v-flex>
@@ -51,6 +60,9 @@
             },
             comment: {
                 type: String
+            },
+            user: {
+                type: String
             }
         },
         mounted () {
@@ -61,6 +73,14 @@
             }
         },
         methods: {
+            getAvatar (user) {
+                let allUserInfo = this.$store.state.allUserInfo;
+                for (let userInfo of allUserInfo) {
+                    if (user === userInfo.username) {
+                        return userInfo.avatar;
+                    }
+                }
+            }
         }
     };
 </script>

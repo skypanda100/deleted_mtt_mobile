@@ -93,6 +93,9 @@
                     days: this.day
                 };
                 this.sleepLineData = [];
+                this.sleepPieData[0].num = 0;
+                this.sleepPieData[1].num = 0;
+                this.sleepPieData[2].num = 0;
                 fetchSleepQualities(params).then(response => {
                     let data = response.data;
                     data.map(d => {
@@ -118,9 +121,9 @@
                     let sumShallowSleep = this.sleepPieData[0].num;
                     let sumDeepSleep = this.sleepPieData[1].num;
                     let sumAwake = this.sleepPieData[2].num;
-                    this.sleepPieData[0].ratio += sumShallowSleep / (sumShallowSleep + sumDeepSleep + sumAwake);
-                    this.sleepPieData[1].ratio += sumDeepSleep / (sumShallowSleep + sumDeepSleep + sumAwake);
-                    this.sleepPieData[2].ratio += sumAwake / (sumShallowSleep + sumDeepSleep + sumAwake);
+                    this.sleepPieData[0].ratio = sumShallowSleep / (sumShallowSleep + sumDeepSleep + sumAwake);
+                    this.sleepPieData[1].ratio = sumDeepSleep / (sumShallowSleep + sumDeepSleep + sumAwake);
+                    this.sleepPieData[2].ratio = sumAwake / (sumShallowSleep + sumDeepSleep + sumAwake);
 
                     this.makeCharts();
                 });
@@ -132,7 +135,7 @@
                     pixelRatio: window.devicePixelRatio
                 });
                 sleepLineChart.source(this.sleepLineData, this.sleepLineDef);
-                sleepLineChart.line().position('date*value').color('type', ['#4169E1', '#483D8B', '#FFA500']);
+                sleepLineChart.line().position('date*value').shape('smooth').color('type', ['#4169E1', '#483D8B', '#FFA500']);
                 sleepLineChart.render();
                 // pie
                 let sleepPieChart = new F2.Chart({

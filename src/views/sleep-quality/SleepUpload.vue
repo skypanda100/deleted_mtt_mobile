@@ -98,10 +98,10 @@
                 ></v-time-picker>
             </v-menu>
         </v-flex>
-        <v-flex xs10 sm6 v-if="deepSleepTimes.length > 0">
+        <v-flex xs8 sm6 v-if="deepSleepTimes.length > 0">
             <h4>深睡</h4>
         </v-flex>
-        <v-flex xs2 sm6 v-if="deepSleepTimes.length > 0">
+        <v-flex xs4 sm6 v-if="deepSleepTimes.length > 0">
             <p class="text-lg-right">{{Math.floor(sumDeepSleep / 60)}}时{{Math.floor(sumDeepSleep % 60)}}分</p>
         </v-flex>
         <v-layout row wrap v-for="(deepSleep, index) in deepSleepTimes" :key="'deepSleep' + index">
@@ -124,10 +124,10 @@
                 ></v-text-field>
             </v-flex>
         </v-layout>
-        <v-flex xs10 sm6 v-if="awakeTimes.length > 0">
+        <v-flex xs8 sm6 v-if="awakeTimes.length > 0">
             <h4>清醒</h4>
         </v-flex>
-        <v-flex xs2 sm6 v-if="awakeTimes.length > 0">
+        <v-flex xs4 sm6 v-if="awakeTimes.length > 0">
             <p class="text-lg-right">{{Math.floor(sumAwake / 60)}}时{{Math.floor(sumAwake % 60)}}分</p>
         </v-flex>
         <v-layout row wrap v-for="(awake, index) in awakeTimes" :key="'awake' + index">

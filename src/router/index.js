@@ -65,7 +65,8 @@ export default new Router({
                 imagePath: route.query.imagePath,
                 grade: route.query.grade,
                 dateTime: route.query.dateTime,
-                comment: route.query.comment
+                comment: route.query.comment,
+                user: route.query.user
             }),
             meta: {
                 keepAlive: false

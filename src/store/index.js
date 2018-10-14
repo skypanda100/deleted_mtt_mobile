@@ -12,7 +12,8 @@ const state = {
     userInfo: {
         avatar: auth.getAvatar(),
         alias: auth.getAlias()
-    }
+    },
+    allUserInfo: []
 };
 export default new Vuex.Store({
     state,
@@ -25,6 +26,9 @@ export default new Vuex.Store({
                 avatar: userInfo.avatar,
                 alias: userInfo.alias
             };
+        },
+        SET_ALL_USER_INFO (state, allUserInfo) {
+            state.allUserInfo = allUserInfo;
         }
     },
     actions: {
@@ -37,6 +41,12 @@ export default new Vuex.Store({
         SetUserInfo ({commit}, data) {
             return new Promise(resolve => {
                 commit('SET_USER_INFO', data);
+                resolve();
+            });
+        },
+        SetAllUserInfo ({commit}, data) {
+            return new Promise(resolve => {
+                commit('SET_ALL_USER_INFO', data);
                 resolve();
             });
         }

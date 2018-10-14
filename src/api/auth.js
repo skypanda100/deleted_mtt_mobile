@@ -7,3 +7,10 @@ export function fetchAuthToken (params) {
         data: params
     });
 }
+
+export function fetchAllUsers () {
+    return service({
+        method: 'get',
+        url: 'users/all'
+    });
+}

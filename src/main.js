@@ -30,14 +30,6 @@ router.beforeEach((to, from, next) => {
     } else {
         next();
     }
-    // console.log(auth.getToken());
-    // if (to.name !== 'Login') {
-    //     next({
-    //         name: 'Login'
-    //     });
-    // } else {
-    //     next();
-    // }
 });
 
 router.afterEach((to) => {

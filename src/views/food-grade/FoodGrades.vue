@@ -4,7 +4,7 @@
             v-for="(src, index) in list"
             :key="index"
             xs6>
-            <v-card :to="{path: `/food-grade?imagePath=${src.imagePath}&grade=${src.grade}&dateTime=${src.dateTime}&comment=${src.comment}`}">
+            <v-card :to="{path: `/food-grade?imagePath=${src.imagePath}&grade=${src.grade}&dateTime=${src.dateTime}&comment=${src.comment}&user=${src.user}`}">
                 <v-img
                     :src="imageHost + '/' + src.imagePath"
                     :lazy-src="imageHost + '/' + src.imagePath"
@@ -20,10 +20,18 @@
                     </v-layout>
                 </v-img>
                 <v-card-title>
-                    <div class="text-xs-left" style="font-size: 10px">
-                        <div>{{src.dateTime}}</div>
-                        <v-rating v-model="src.grade" dense readonly color="#f00" :size="10"></v-rating>
-                    </div>
+                    <v-flex xs2>
+                        <v-avatar size="30px">
+                            <img :src="imageHost + '/' + getAvatar(src.user)">
+                        </v-avatar>
+                    </v-flex>
+
+                    <v-flex xs10>
+                        <div class="text-xs-right" style="font-size: 10px">
+                            <div>{{src.dateTime}}</div>
+                            <v-rating v-model="src.grade" dense readonly color="#f00" :size="10"></v-rating>
+                        </div>
+                    </v-flex>
                 </v-card-title>
             </v-card>
         </v-flex>
@@ -63,24 +71,25 @@
             next();
         },
         activated () {
-            console.log(this.isFirstEnter);
             if (!this.$route.meta.isBack || this.isFirstEnter) {
                 fetchFoodGrade('-dateTime').then(response => {
                     this.list = response.data;
-                    console.log(this.list);
                 });
             }
             this.$route.meta.isBack = false;
             this.isFirstEnter = false;
         },
         computed: {
-            leftOptions () {
-                return {
-                    showBack: false
-                };
-            }
         },
         methods: {
+            getAvatar (user) {
+                let allUserInfo = this.$store.state.allUserInfo;
+                for (let userInfo of allUserInfo) {
+                    if (user === userInfo.username) {
+                        return userInfo.avatar;
+                    }
+                }
+            }
         }
     };
 </script>
