@@ -33,6 +33,7 @@
 
 <script>
     import router from '../router';
+    import { fetchAllUsers } from '@/api/auth';
 
     export default {
         name: 'home',
@@ -40,6 +41,11 @@
             routes () {
                 return router.options.routes;
             }
+        },
+        mounted () {
+            fetchAllUsers().then(response => {
+                this.$store.dispatch('SetAllUserInfo', response.data);
+            });
         },
         methods: {
             goNext (url) {

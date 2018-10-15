@@ -61,7 +61,6 @@
 <script>
     import router from './router';
     import env from '@/../config/env';
-    import { fetchAllUsers } from './api/auth';
     import util from './libs/util';
 
     export default {
@@ -101,11 +100,6 @@
             }
         },
         mounted () {
-        },
-        activated () {
-            fetchAllUsers().then(response => {
-                this.$store.dispatch('SetAllUserInfo', response.data);
-            });
         },
         methods: {
             handleCameraClicked () {
