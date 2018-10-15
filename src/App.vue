@@ -7,8 +7,8 @@
             app>
             <v-card>
                 <v-img
-                    :src="imageHost + '/' + avatar"
-                    :lazy-src="imageHost + '/' + avatar"
+                    :src="avatar === '' ? '' : imageHost + '/' + avatar"
+                    :lazy-src="avatar === '' ? '' : imageHost + '/' + avatar"
                     aspect-ratio="1"
                     class="grey lighten-2">
                     <v-layout
@@ -62,6 +62,7 @@
     import router from './router';
     import env from '@/../config/env';
     import { fetchAllUsers } from './api/auth';
+    import util from './libs/util';
 
     export default {
         name: 'app',
@@ -73,6 +74,9 @@
         },
         computed: {
             avatar () {
+                if (util.isNull(this.$store.state.userInfo.avatar)) {
+                    return '';
+                }
                 return this.$store.state.userInfo.avatar + '?timestamp=' + new Date().getTime();
             },
             route () {
@@ -97,6 +101,8 @@
             }
         },
         mounted () {
+        },
+        activated () {
             fetchAllUsers().then(response => {
                 this.$store.dispatch('SetAllUserInfo', response.data);
             });
