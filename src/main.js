@@ -13,6 +13,8 @@ import 'vuetify/dist/vuetify.min.css';
 import 'material-design-icons-iconfont/dist/material-design-icons.css';
 import 'babel-polyfill';
 import auth from './libs/auth';
+import { fetchAllUsers } from '@/api/auth';
+import util from '@/libs/util';
 
 Vue.use(Croppa);
 Vue.use(VueRouter);
@@ -23,6 +25,11 @@ FastClick.attach(document.body);
 Vue.config.productionTip = false;
 
 router.beforeEach((to, from, next) => {
+    if (util.isNull(store.state.allUserInfo) || store.state.allUserInfo.length === 0) {
+        fetchAllUsers().then(response => {
+            store.dispatch('SetAllUserInfo', response.data);
+        });
+    }
     if (!auth.getToken() && to.name !== 'Login') {
         next({
             name: 'Login'
