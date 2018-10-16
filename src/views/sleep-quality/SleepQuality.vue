@@ -374,6 +374,8 @@
                     } else {
                         return 'dash';
                     }
+                }).style({
+                    lineWidth: 1
                 });
                 sleepAreaChart.render();
             },
@@ -422,6 +424,8 @@
                     } else {
                         return 'dash';
                     }
+                }).style({
+                    lineWidth: 1
                 });
                 sleepLineChart.render();
             },
