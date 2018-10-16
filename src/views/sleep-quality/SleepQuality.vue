@@ -56,7 +56,7 @@
 <script>
     import auth from '@/libs/auth';
     import { fetchSleepQualities } from '@/api/sleep-quality';
-    import F2 from '@antv/f2';
+    import F2 from '@antv/f2/dist/f2-all.min.js';
     import util from '@/libs/util';
 
     const SleepColor = '#7B68EE';
@@ -83,32 +83,7 @@
                         value: 365
                     }
                 ],
-                sleepCount: 0,
-                sleepAreaDef: {
-                    date: {
-                        type: 'timeCat',
-                        mask: 'MM-DD',
-                        range: [0, 1]
-                    },
-                    value: {
-                        formatter: (val) => {
-                            return util.formatDate(new Date(val * 1000), 'hh:mm');
-                        }
-                    }
-                },
                 sleepAreaData: [{ date: '', value: 0, type: '入睡', user: '' }],
-                sleepLineDef: {
-                    date: {
-                        type: 'timeCat',
-                        mask: 'MM-DD',
-                        range: [0, 1]
-                    },
-                    value: {
-                        formatter: (val) => {
-                            return val;
-                        }
-                    }
-                },
                 sleepLineData: [{ date: '', value: 0, type: '总睡眠', user: '' }],
                 sleepBarData: [],
                 sleepRadarData: []
@@ -203,7 +178,6 @@
                 };
                 fetchSleepQualities(params).then(response => {
                     let data = response.data;
-                    this.sleepCount = data.length;
                     this.makeAreaData(data);
                     this.makeLineData(data);
                     this.makeBarData(data);
@@ -334,7 +308,18 @@
                     id: 'sleepAreaCanvas',
                     pixelRatio: window.devicePixelRatio
                 });
-                sleepAreaChart.source(this.sleepAreaData, this.sleepAreaDef);
+                sleepAreaChart.source(this.sleepAreaData, {
+                    date: {
+                        type: 'timeCat',
+                        mask: 'MM-DD',
+                        range: [0, 1]
+                    },
+                    value: {
+                        formatter: (val) => {
+                            return util.formatDate(new Date(val * 1000), 'hh:mm');
+                        }
+                    }
+                });
                 sleepAreaChart.tooltip({
                     showItemMarker: false,
                     custom: true,
@@ -384,7 +369,13 @@
                     id: 'sleepLineCanvas',
                     pixelRatio: window.devicePixelRatio
                 });
-                sleepLineChart.source(this.sleepLineData, this.sleepLineDef);
+                sleepLineChart.source(this.sleepLineData, {
+                    date: {
+                        type: 'timeCat',
+                        mask: 'MM-DD',
+                        range: [0, 1]
+                    }
+                });
                 sleepLineChart.tooltip({
                     showItemMarker: false,
                     custom: true,
