@@ -1,14 +1,14 @@
 <template>
     <v-layout row wrap>
-        <v-flex xs5>
+        <v-flex xs12>
             <v-select
                 :items="users"
                 label="用户"
                 v-model="user"
+                multiple
             ></v-select>
         </v-flex>
-        <v-spacer></v-spacer>
-        <v-flex xs5>
+        <v-flex xs12>
             <v-select
                 :items="days"
                 label="显示期间"
@@ -21,6 +21,7 @@
                     <h3>入睡睡醒时间趋势</h3>
                 </v-card-title>
                 <canvas id="sleepAreaCanvas" class="sleepContainer"></canvas>
+                <div id="sleepAreaDate" class="dateArea"></div>
             </v-card>
         </v-flex>
         <v-flex xs12 sm6 offset-sm3>
@@ -29,14 +30,7 @@
                     <h3>睡眠时长趋势</h3>
                 </v-card-title>
                 <canvas id="sleepLineCanvas" class="sleepContainer"></canvas>
-            </v-card>
-        </v-flex>
-        <v-flex xs12 sm6 offset-sm3>
-            <v-card>
-                <v-card-title primary-title>
-                    <h3>平均睡眠时长</h3>
-                </v-card-title>
-                <canvas id="sleepPieCanvas" class="sleepContainer"></canvas>
+                <div id="sleepLineDate" class="dateArea"></div>
             </v-card>
         </v-flex>
         <v-flex xs12 sm6 offset-sm3>
@@ -47,6 +41,14 @@
                 <canvas id="sleepRadarCanvas" class="sleepContainer"></canvas>
             </v-card>
             <br>
+        </v-flex>
+        <v-flex xs12 sm6 offset-sm3>
+            <v-card>
+                <v-card-title primary-title>
+                    <h3>平均睡眠时长</h3>
+                </v-card-title>
+                <canvas id="sleepBarCanvas" class="sleepContainer"></canvas>
+            </v-card>
         </v-flex>
     </v-layout>
 </template>
@@ -65,7 +67,7 @@
         name: 'SleepQuality',
         data () {
             return {
-                user: auth.getUser(),
+                user: [auth.getUser()],
                 day: 7,
                 days: [
                     {
@@ -86,7 +88,6 @@
                     date: {
                         type: 'timeCat',
                         mask: 'MM-DD',
-                        tickCount: 7,
                         range: [0, 1]
                     },
                     value: {
@@ -95,12 +96,11 @@
                         }
                     }
                 },
-                sleepAreaData: [{ date: '', value: 0, type: '入睡' }],
+                sleepAreaData: [{ date: '', value: 0, type: '入睡', user: '' }],
                 sleepLineDef: {
                     date: {
                         type: 'timeCat',
                         mask: 'MM-DD',
-                        tickCount: 7,
                         range: [0, 1]
                     },
                     value: {
@@ -109,14 +109,9 @@
                         }
                     }
                 },
-                sleepLineData: [{ date: '', value: 0, type: '总睡眠' }],
-                sleepPieData: [
-                    {avg: 0.0, ratio: 0.0, name: '总睡', a: '1'},
-                    {avg: 0.0, ratio: 0.0, name: '深睡', a: '1'},
-                    {avg: 0.0, ratio: 0.0, name: '清醒', a: '1'}
-                ],
-                sleepRadarData: [
-                ]
+                sleepLineData: [{ date: '', value: 0, type: '总睡眠', user: '' }],
+                sleepBarData: [],
+                sleepRadarData: []
             };
         },
         watch: {
@@ -143,13 +138,45 @@
             this.fetchData();
         },
         methods: {
+            getUserAlias (user) {
+                for (let userInfo of this.$store.state.allUserInfo) {
+                    if (user === userInfo.username) {
+                        return userInfo.alias;
+                    }
+                }
+                return '';
+            },
+            getUser (alias) {
+                for (let userInfo of this.$store.state.allUserInfo) {
+                    if (alias === userInfo.alias) {
+                        return userInfo.username;
+                    }
+                }
+                return '';
+            },
             clearRadarData () {
                 this.sleepRadarData = [];
                 for (let i = 23; i < 24 + 9; i++) {
-                    this.sleepRadarData.push({
-                        item: i % 24 + '', count: 0
+                    this.user.map(u => {
+                        this.sleepRadarData.push({
+                            item: i % 24 + '', count: 0, alias: this.getUserAlias(u)
+                        });
                     });
                 }
+            },
+            clearBarData () {
+                this.sleepBarData = [];
+                this.user.map(u => {
+                    this.sleepBarData.push({
+                        avg: 0.0, name: '总睡', alias: this.getUserAlias(u)
+                    });
+                    this.sleepBarData.push({
+                        avg: 0.0, name: '深睡', alias: this.getUserAlias(u)
+                    });
+                    this.sleepBarData.push({
+                        avg: 0.0, name: '清醒', alias: this.getUserAlias(u)
+                    });
+                });
             },
             formatTime (val) {
                 let label = '';
@@ -161,9 +188,15 @@
                 if (minutes > 0) {
                     label += minutes + '分';
                 }
+                if (label === '') {
+                    label = '0分';
+                }
                 return label;
             },
             fetchData () {
+                if (this.user.length === 0) {
+                    return;
+                }
                 let params = {
                     user: this.user,
                     days: this.day
@@ -173,11 +206,11 @@
                     this.sleepCount = data.length;
                     this.makeAreaData(data);
                     this.makeLineData(data);
-                    this.makePieData(data);
+                    this.makeBarData(data);
                     this.makeRadarData(data);
                     this.makeAreaChart();
                     this.makeLineChart();
-                    this.makePieChart();
+                    this.makeBarChart();
                     this.makeRadarChart();
                 });
             },
@@ -205,12 +238,14 @@
                     this.sleepAreaData.push({
                         date: d.date,
                         value: Math.floor(startTime / 1000),
-                        type: '入睡'
+                        type: '入睡',
+                        user: d.user
                     });
                     this.sleepAreaData.push({
                         date: d.date,
                         value: Math.floor(endTime / 1000),
-                        type: '睡醒'
+                        type: '睡醒',
+                        user: d.user
                     });
                 });
             },
@@ -220,44 +255,60 @@
                     this.sleepLineData.push({
                         date: d.date,
                         value: d.sumSleep,
-                        type: '总睡眠'
+                        type: '总睡',
+                        user: d.user
                     });
                     this.sleepLineData.push({
                         date: d.date,
                         value: d.sumDeepSleep,
-                        type: '深睡'
+                        type: '深睡',
+                        user: d.user
                     });
                     this.sleepLineData.push({
                         date: d.date,
                         value: d.sumAwake,
-                        type: '清醒'
+                        type: '清醒',
+                        user: d.user
                     });
                 });
             },
-            makePieData (data) {
-                let sumSleep = 0;
-                let sumDeepSleep = 0;
-                let sumAwake = 0;
-                data.map(d => {
-                    sumSleep += d.sumSleep;
-                    sumDeepSleep += d.sumDeepSleep;
-                    sumAwake += d.sumAwake;
+            makeBarData (data) {
+                this.clearBarData();
+                this.user.map(u => {
+                    let sumSleep = 0;
+                    let sumDeepSleep = 0;
+                    let sumAwake = 0;
+                    let count = 0;
+                    data.map(d => {
+                        if (d.user === u) {
+                            sumSleep += d.sumSleep;
+                            sumDeepSleep += d.sumDeepSleep;
+                            sumAwake += d.sumAwake;
+                            count++;
+                        }
+                    });
+                    let avgSumSleep = Math.floor(sumSleep / count);
+                    let avgDeepSleep = Math.floor(sumDeepSleep / count);
+                    let avgAwake = Math.floor(sumAwake / count);
+                    for (let sleepData of this.sleepBarData) {
+                        if (sleepData.alias === this.getUserAlias(u)) {
+                            if (sleepData.name === '总睡') {
+                                sleepData.avg = avgSumSleep;
+                            } else if (sleepData.name === '深睡') {
+                                sleepData.avg = avgDeepSleep;
+                            } else if (sleepData.name === '清醒') {
+                                sleepData.avg = avgAwake;
+                            }
+                        }
+                    }
                 });
-                let avgSumSleep = Math.floor(sumSleep / data.length);
-                let avgDeepSleep = Math.floor(sumDeepSleep / data.length);
-                let avgAwake = Math.floor(sumAwake / data.length);
-                this.sleepPieData[0].avg = avgSumSleep;
-                this.sleepPieData[1].avg = avgDeepSleep;
-                this.sleepPieData[2].avg = avgAwake;
-                this.sleepPieData[0].ratio = avgSumSleep / (avgSumSleep + avgDeepSleep + avgAwake);
-                this.sleepPieData[1].ratio = avgDeepSleep / (avgSumSleep + avgDeepSleep + avgAwake);
-                this.sleepPieData[2].ratio = avgAwake / (avgSumSleep + avgDeepSleep + avgAwake);
             },
             makeRadarData (data) {
                 this.clearRadarData();
                 data.map(d => {
                     let deepSleeps = d.deepSleeps;
                     deepSleeps.map(deepSleep => {
+                        let alias = this.getUserAlias(d.user);
                         let start = deepSleep.start;
                         let end = deepSleep.end;
                         let startTime = util.parseDate(start, 'yyyy-MM-dd hh:mm').getTime();
@@ -269,7 +320,7 @@
                         for (let i = 0; i <= diffHour; i++) {
                             let dspStartHour = (startHour + i) % 24;
                             for (let sleepData of this.sleepRadarData) {
-                                if (parseInt(sleepData.item) === dspStartHour) {
+                                if (parseInt(sleepData.item) === dspStartHour && sleepData.alias === alias) {
                                     sleepData.count++;
                                     break;
                                 }
@@ -286,13 +337,44 @@
                 sleepAreaChart.source(this.sleepAreaData, this.sleepAreaDef);
                 sleepAreaChart.tooltip({
                     showItemMarker: false,
-                    onShow: function onShow (ev) {
-                        let items = ev.items;
-                        items[0].name = items[0].title + '  ' + items[0].name;
+                    custom: true,
+                    onChange: (obj) => {
+                        // legend
+                        let legend = sleepAreaChart.get('legendController').legends.top[0];
+                        let tooltipItems = obj.items;
+                        let legendItems = legend.items;
+                        let map = {};
+                        legendItems.map((item) => {
+                            map[item.name] = item;
+                            map[item.name].value = '';
+                        });
+                        tooltipItems.map((item) => {
+                            let name = item.name;
+                            let value = item.value;
+                            if (map[name]) {
+                                map[name].value += value + ' ';
+                            }
+                        });
+                        legend.setItems();
+                        // tooltip
+                        let coord = sleepAreaChart.get('coord');
+                        let title = tooltipItems[0].title;
+                        let dateEle = document.getElementById('sleepAreaDate');
+                        dateEle.innerHTML = title;
+                        dateEle.style.visibility = 'visible';
+                        dateEle.style.left = obj.x + 'px';
+                        dateEle.style.top = coord.y.start + coord.y.end + dateEle.offsetHeight / 2 + 'px';
                     },
                     showCrosshairs: true
                 });
-                sleepAreaChart.line().position('date*value').shape('smooth').color('type', [SleepColor, AwakeColor]);
+                sleepAreaChart.line().position('date*value').color('type', [SleepColor, AwakeColor]).shape('user', (user) => {
+                    let userIndex = this.user.indexOf(user);
+                    if (userIndex % 2 === 0) {
+                        return 'line';
+                    } else {
+                        return 'dash';
+                    }
+                });
                 sleepAreaChart.render();
             },
             makeLineChart () {
@@ -303,53 +385,86 @@
                 sleepLineChart.source(this.sleepLineData, this.sleepLineDef);
                 sleepLineChart.tooltip({
                     showItemMarker: false,
-                    onShow: function onShow (ev) {
-                        let items = ev.items;
-                        items[0].name = items[0].title + '  ' + items[0].name;
+                    custom: true,
+                    onChange: (obj) => {
+                        // legend
+                        let legend = sleepLineChart.get('legendController').legends.top[0];
+                        let tooltipItems = obj.items;
+                        let legendItems = legend.items;
+                        let map = {};
+                        legendItems.map((item) => {
+                            map[item.name] = item;
+                            map[item.name].value = '';
+                        });
+                        tooltipItems.map((item) => {
+                            let name = item.name;
+                            let value = this.formatTime(item.value);
+                            if (map[name]) {
+                                map[name].value += value + ' ';
+                            }
+                        });
+                        legend.setItems();
+                        // tooltip
+                        let coord = sleepLineChart.get('coord');
+                        let title = tooltipItems[0].title;
+                        let dateEle = document.getElementById('sleepLineDate');
+                        dateEle.innerHTML = title;
+                        dateEle.style.visibility = 'visible';
+                        dateEle.style.left = obj.x + 'px';
+                        dateEle.style.top = coord.y.start + coord.y.end + dateEle.offsetHeight / 2 + 'px';
                     },
                     showCrosshairs: true
                 });
-                sleepLineChart.line().position('date*value').shape('smooth').color('type', [SleepColor, DeepSleepColor, AwakeColor]);
+                sleepLineChart.line().position('date*value').color('type', [SleepColor, DeepSleepColor, AwakeColor]).shape('user', (user) => {
+                    let userIndex = this.user.indexOf(user);
+                    if (userIndex % 2 === 0) {
+                        return 'line';
+                    } else {
+                        return 'dash';
+                    }
+                });
                 sleepLineChart.render();
             },
-            makePieChart () {
-                let sleepPieChart = new F2.Chart({
-                    id: 'sleepPieCanvas',
+            makeBarChart () {
+                let sleepBarChart = new F2.Chart({
+                    id: 'sleepBarCanvas',
                     pixelRatio: window.devicePixelRatio
                 });
-                sleepPieChart.source(this.sleepPieData, {
-                    avg: {
-                        formatter: (val) => {
-                            return this.formatTime(val);
-                        }
-                    }
-                });
-                sleepPieChart.coord('polar', {
-                    transposed: true,
-                    innerRadius: 0.4,
-                    radius: 0.8
-                });
-                sleepPieChart.legend({
-                    position: 'top',
-                    itemFormatter: (val) => {
-                        let avg = 0;
-                        for (let sleepData of this.sleepPieData) {
-                            if (sleepData.name === val) {
-                                avg = sleepData.avg;
-                                break;
+                sleepBarChart.source(this.sleepBarData);
+                sleepBarChart.tooltip({
+                    showItemMarker: false,
+                    custom: true,
+                    onChange: (obj) => {
+                        let legend = sleepBarChart.get('legendController').legends.top[0];
+                        let tooltipItems = obj.items;
+                        let legendItems = legend.items;
+                        let map = {};
+                        legendItems.map((item) => {
+                            map[item.name] = item;
+                            map[item.name].value = '';
+                        });
+                        tooltipItems.map((item) => {
+                            let name = item.name;
+                            let value = this.formatTime(item.value);
+                            if (map[name]) {
+                                map[name].value += value + ' ';
                             }
-                        }
-                        return val + ' ' + this.formatTime(avg);
+                        });
+                        legend.setItems();
                     }
                 });
-                sleepPieChart.tooltip(false);
-                sleepPieChart.coord('polar', {
-                    transposed: true,
-                    radius: 0.85
+                sleepBarChart.interval().position('name*avg').color('alias', (alias) => {
+                    let userIndex = this.user.indexOf(this.getUser(alias));
+                    if (userIndex % 2 === 0) {
+                        return 'l(90) 0:#1890ff 1:#00B2EE';
+                    } else {
+                        return 'l(90) 0:#CD6889 1:#CD5C5C';
+                    }
+                }).adjust({
+                    type: 'dodge',
+                    marginRatio: 0.05 // 设置分组间柱子的间距
                 });
-                sleepPieChart.axis(false);
-                sleepPieChart.interval().position('a*ratio').color('name', [SleepColor, DeepSleepColor, AwakeColor]).adjust('stack');
-                sleepPieChart.render();
+                sleepBarChart.render();
             },
             makeRadarChart () {
                 let sleepRadarchart = new F2.Chart({
@@ -363,17 +478,47 @@
                         tickCount: 4
                     }
                 });
-                sleepRadarchart.axis('item', {
-                    grid: {
-                        lineDash: null
+                sleepRadarchart.tooltip({
+                    showItemMarker: false,
+                    custom: true,
+                    onChange: (obj) => {
+                        let legend = sleepRadarchart.get('legendController').legends.top[0];
+                        let tooltipItems = obj.items;
+                        let legendItems = legend.items;
+                        let map = {};
+                        legendItems.map((item) => {
+                            map[item.name] = item;
+                            map[item.name].value = '';
+                        });
+                        tooltipItems.map((item) => {
+                            let name = item.name;
+                            let value = item.value;
+                            if (map[name]) {
+                                map[name].value += value + ' ';
+                            }
+                        });
+                        legend.setItems();
                     }
                 });
                 sleepRadarchart.area().position('item*count').style({
-                    fill: DeepSleepColor,
                     fillOpacity: 0.6
+                }).color('alias', (alias) => {
+                    let userIndex = this.user.indexOf(this.getUser(alias));
+                    if (userIndex % 2 === 0) {
+                        return '#00B2EE';
+                    } else {
+                        return '#CD5C5C';
+                    }
                 });
-                sleepRadarchart.line().position('item*count').style({
-                    stroke: DeepSleepColor
+                sleepRadarchart.line().position('item*count').color('alias', (alias) => {
+                    let userIndex = this.user.indexOf(this.getUser(alias));
+                    if (userIndex % 2 === 0) {
+                        return '#00B2EE';
+                    } else {
+                        return '#CD5C5C';
+                    }
+                }).style({
+                    lineWidth: 1
                 });
                 sleepRadarchart.render();
             }
@@ -385,5 +530,17 @@
     .sleepContainer {
         width: 100%;
         height: 100%;
+    }
+    .dateArea {
+        visibility: hidden;
+        position: absolute;
+        width: 10vw;
+        font-size: 3.2vw;
+        color: #fff;
+        margin-left: -5vw;
+        margin-top: 1vw;
+        background-color: #808080;
+        padding: 0 2px;
+        z-index: 100;
     }
 </style>
