@@ -18,6 +18,22 @@
         <v-flex xs12 sm6 offset-sm3>
             <v-card>
                 <v-card-title primary-title>
+                    <h3>深睡时间分布</h3>
+                </v-card-title>
+                <canvas id="sleepRadarCanvas" class="sleepContainer"></canvas>
+            </v-card>
+        </v-flex>
+        <v-flex xs12 sm6 offset-sm3>
+            <v-card>
+                <v-card-title primary-title>
+                    <h3>平均睡眠时长</h3>
+                </v-card-title>
+                <canvas id="sleepBarCanvas" class="sleepContainer"></canvas>
+            </v-card>
+        </v-flex>
+        <v-flex xs12 sm6 offset-sm3>
+            <v-card>
+                <v-card-title primary-title>
                     <h3>入睡睡醒时间趋势</h3>
                 </v-card-title>
                 <canvas id="sleepAreaCanvas" class="sleepContainer"></canvas>
@@ -31,23 +47,6 @@
                 </v-card-title>
                 <canvas id="sleepLineCanvas" class="sleepContainer"></canvas>
                 <div id="sleepLineDate" class="dateArea"></div>
-            </v-card>
-        </v-flex>
-        <v-flex xs12 sm6 offset-sm3>
-            <v-card>
-                <v-card-title primary-title>
-                    <h3>深睡时间分布</h3>
-                </v-card-title>
-                <canvas id="sleepRadarCanvas" class="sleepContainer"></canvas>
-            </v-card>
-            <br>
-        </v-flex>
-        <v-flex xs12 sm6 offset-sm3>
-            <v-card>
-                <v-card-title primary-title>
-                    <h3>平均睡眠时长</h3>
-                </v-card-title>
-                <canvas id="sleepBarCanvas" class="sleepContainer"></canvas>
             </v-card>
         </v-flex>
     </v-layout>
@@ -68,7 +67,7 @@
         data () {
             return {
                 user: [auth.getUser()],
-                day: 7,
+                day: 30,
                 days: [
                     {
                         text: '过去一周',
@@ -79,8 +78,8 @@
                         value: 30
                     },
                     {
-                        text: '过去一年',
-                        value: 365
+                        text: '过去三月',
+                        value: 90
                     }
                 ],
                 sleepAreaData: [{ date: '', value: 0, type: '入睡', user: '' }],
